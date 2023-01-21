@@ -4,3 +4,5 @@
 .vscode
 #ignore pdf files
 *.pdf
+#ignore debug folder
+*.dSYM
