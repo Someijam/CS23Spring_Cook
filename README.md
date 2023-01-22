@@ -9,12 +9,12 @@
 
 jz001: maxBaseStrength=1.0490 
 
-    &emsp;maxX=109579     maxY=39820 
+&emsp;maxX=109579     maxY=39820 
 
-    &emsp;maxXno=2254     maxYno=2161 
+&emsp;maxXno=2254     maxYno=2161 
 
 jz002: maxBaseStrength=1.0 
 
-    &emsp;maxX=109996     maxY=39946 
+&emsp;maxX=109996     maxY=39946 
 
-    &emsp;maxXno=50524    maxYno=50076 
+&emsp;maxXno=50524    maxYno=50076 
