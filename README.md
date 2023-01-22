@@ -7,9 +7,9 @@
 
 当前任务：无GUI的Demo版本
 
-jz001: maxBaseStrength=1.0490
-        maxX=109579     maxY=39820
-        maxXno=2254     maxYno=2161
-jz002: maxBaseStrength=1.0
-        maxX=109996     maxY=39946
-        maxXno=50524    maxYno=50076
+jz001: maxBaseStrength=1.0490 
+    &emsp;maxX=109579     maxY=39820 
+    &emsp;maxXno=2254     maxYno=2161 
+jz002: maxBaseStrength=1.0 
+    &emsp;maxX=109996     maxY=39946 
+    &emsp;maxXno=50524    maxYno=50076 
