@@ -35,7 +35,7 @@ struct Station//基站信息
     int no;//顺序编号
 };
 
-int defineWhichQuadrant(Station st,QuadTreeNode tree)
+int defineWhichQuadrant(Station st,QuadTreeNode tree)//查找这个基站相对于当前中心的象限
 {
     if((st.x-tree.x>0)&&(st.y-tree.y>=0))return 0;
     else if((st.x-tree.x<=0)&&(st.y-tree.y>0))return 1;
@@ -43,7 +43,7 @@ int defineWhichQuadrant(Station st,QuadTreeNode tree)
     else if((st.x-tree.x>=0)&&(st.y-tree.y<0))return 3;
     else return 0;
 }
-void addStationToTree(Station st)
+void addStationToTree(Station st)//将基站st添加到四叉树
 {
     
     return;
@@ -76,7 +76,7 @@ int main()
         }
     }
     //线性存储各个基站数据
-    
+
     for(int i=1;i<Stations.size();i++)
     {
         addStationToTree(Stations[i]);
