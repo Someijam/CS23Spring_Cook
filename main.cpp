@@ -45,54 +45,7 @@ int defineWhichQuadrant(Station st,QuadTreeNode tree)
 }
 void addStationToTree(Station st)
 {
-    QuadTreeNode* currentTree=&MapRoot;
-    if(currentTree->isLeaf)//是叶节点
-    {
-        if(currentTree->includedStationNo==0)
-        {
-            currentTree->includedStationNo=st.no;//新建的叶节点，没人，使用该节点
-            return;
-        }
-        else //这一级节点有人了
-        {
-            currentTree->isLeaf=false;//稍后分裂节点
-            for(int i=0;i<4;i++)//分裂节点
-            {
-                currentTree->children[i]=new QuadTreeNode;
-                currentTree->children[i]->parent=currentTree;
-                currentTree->children[i]->includedStationNo=0;
-                currentTree->children[i]->isLeaf=true;
-                currentTree->children[i]->level=currentTree->level+1;
-            }
-            currentTree->children[0]->x=(currentTree->x+BORDER)/2;
-            currentTree->children[1]->x=(currentTree->x-BORDER)/2;
-            currentTree->children[2]->x=(currentTree->x-BORDER)/2;
-            currentTree->children[3]->x=(currentTree->x+BORDER)/2;
-
-            currentTree->children[0]->y=(currentTree->y+BORDER)/2;
-            currentTree->children[1]->y=(currentTree->y+BORDER)/2;
-            currentTree->children[2]->y=(currentTree->y-BORDER)/2;
-            currentTree->children[3]->y=(currentTree->y-BORDER)/2;
-            //初始化新节点
-
-            currentTree->children[defineWhichQuadrant(Stations[currentTree->includedStationNo],*currentTree)]->includedStationNo=currentTree->includedStationNo;
-            currentTree->includedStationNo=0;
-            //上一层的站点移下来
-        }
-    }
-    while(currentTree->isLeaf==false)//不是叶节点,找到叶节点为止
-    {
-        int quadrant=defineWhichQuadrant(st,*currentTree);
-        // if(!currentTree->children[quadrant])//没有子节点，考虑是否等价于(currentTree->isLeaf=true)
-        // {
-        //     QuadTreeNode* newChild;
-        //     newChild=new QuadTreeNode;
-        //     currentTree->children[quadrant]=newChild;
-        // }
-        currentTree=currentTree->children[defineWhichQuadrant(st,*currentTree)];
-
-    }
-    currentTree->includedStationNo=st.no;
+    
     return;
 }
 
@@ -123,9 +76,12 @@ int main()
         }
     }
     //线性存储各个基站数据
+    
     for(int i=1;i<Stations.size();i++)
     {
         addStationToTree(Stations[i]);
     }
+    //将基站存储到四叉树中
+
     return 0;
 }
