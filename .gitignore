@@ -1,3 +1,6 @@
+*
+!*.*
+!*/
 #ignore macOS file
 .DS_*
 #ignore .vscode
