@@ -1,6 +1,3 @@
-*
-!*.*
-!*/
 #ignore macOS file
 .DS_*
 #ignore .vscode
@@ -9,3 +6,5 @@
 *.pdf
 #ignore debug folder
 *.dSYM
+#ignore exec file
+main

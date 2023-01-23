@@ -123,13 +123,13 @@ void addStationToTree(Station st)//将基站st添加到四叉树
     return;
 }
 
-void deleteMap(QuadTreeNode* head)
+void deleteMap(QuadTreeNode* head)//释放四叉树空间
 {
     if(head==NULL)
         return;//到尾巴就回
     for(int i=0;i<4;i++)
     {
-        deleteMap(head->children[i]);
+        deleteMap(head->children[i]);//这里触发过报错：head不存在但是不等于NULL
     }
     if(head->level!=0)
     {
@@ -168,7 +168,7 @@ int main()
     for(int i=1;i<Stations.size();i++)
     {
         addStationToTree(Stations[i]);
-        cout<<"Added St#"<<Stations[i].no<<" \tPosition("<<Stations[i].x<<","<<Stations[i].y<<") \t to the Quad Tree."<<endl;
+        // cout<<"Added St#"<<Stations[i].no<<" \tPosition("<<Stations[i].x<<","<<Stations[i].y<<") \t to the Quad Tree."<<endl;
     }
     //将基站存储到四叉树中
     deleteMap(&MapRoot);//释放四叉树占用的空间
