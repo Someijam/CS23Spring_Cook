@@ -24,7 +24,7 @@ struct QuadTreeNode//四叉树结构
     bool isLeaf; // 是否为叶节点
     vector<int> includedStationNo;//此区域(节点)内所有基站编号/序号，没有则size为0
     int quarterWidth();
-}MapRoot;
+};
 
 struct Station//基站信息
 {
@@ -37,6 +37,7 @@ struct Station//基站信息
 };
 
 vector<Station> Stations;
+QuadTreeNode MapRoot;
 
 int QuadTreeNode::quarterWidth()//当前节点四分之一边长
 {
@@ -56,7 +57,7 @@ void diverseTree(QuadTreeNode* leaf)//将此树叶分为四个子节点
 {
     if(!leaf->isLeaf)
     {
-        cerr<<"此种情况绝对不会出现，除非是见鬼了：尝试将四叉树的非叶节点再次四分"<<endl;
+        cerr<<"[ERR]此种情况绝对不会出现，除非是见鬼了：尝试将四叉树的非叶节点再次四分"<<endl;
         exit(0);
     }
     for(int i=0;i<4;i++)
@@ -120,7 +121,7 @@ void addStationToTree(Station st)//将基站st添加到四叉树
     }//叶节点满了就转移到子节点稍后再插入
     else
     {
-        cerr<<"此种情况绝对不会出现，除非是见鬼了：insertTarget->includedStationNo.size()="<<insertTarget->includedStationNo.size()<<endl;
+        cerr<<"[ERR]此种情况绝对不会出现，除非是见鬼了：insertTarget->includedStationNo.size()="<<insertTarget->includedStationNo.size()<<endl;
         exit(0);
     }
 
@@ -137,7 +138,7 @@ void deleteMap(QuadTreeNode* head)//释放四叉树空间
     }
     if(head->level!=0)
     {
-        cout<<"Deleted a stem in level#"<<head->level<<endl;
+        cout<<"[LOG]Deleted a stem in level#"<<head->level<<endl;
         delete head;//MapRoot不是动态分配，不显式删除
         head=NULL;
     }
@@ -146,7 +147,8 @@ void deleteMap(QuadTreeNode* head)//释放四叉树空间
 
 int main()
 {
-    freopen("./test_data/jzdemo.txt", "r", stdin);//测试输入
+    freopen("./test_data/jz001.txt", "r", stdin);//测试输入
+    freopen("./logs/latest.log", "w", stdout);//日志文件
     MapRoot.x=0;
     MapRoot.y=0;
     MapRoot.level=0;
@@ -173,7 +175,7 @@ int main()
     for(int i=1;i<Stations.size();i++)
     {
         addStationToTree(Stations[i]);
-        cout<<"Added St#"<<Stations[i].no<<" \tPosition("<<Stations[i].x<<","<<Stations[i].y<<") \t to the Quad Tree."<<endl;
+        cout<<"[LOG]Added St#"<<Stations[i].no<<" \tPosition("<<Stations[i].x<<","<<Stations[i].y<<") \t to the Quad Tree."<<endl;
     }
     //将基站存储到四叉树中
     deleteMap(&MapRoot);//释放四叉树占用的空间
