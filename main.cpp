@@ -148,7 +148,10 @@ void deleteMap(QuadTreeNode* head)//释放四叉树空间
 int main()
 {
     freopen("./test_data/jz001.txt", "r", stdin);//测试输入
+    system("rm ./logs/latest.log");
+    system("touch ./logs/latest.log");//删除旧日志
     freopen("./logs/latest.log", "w", stdout);//日志文件
+
     MapRoot.x=0;
     MapRoot.y=0;
     MapRoot.level=0;
@@ -160,7 +163,7 @@ int main()
     char inputType[5]={0};
 
     cin>>inputType;
-    if(strcmp(inputType,"JZ")==0)
+    if(strcmp(inputType,"JZ")==0)//基站信息录入
     {
         while(scanf("%d,%d,%s  %lf,%d",&tempSt.x,&tempSt.y,tempSt.typeName,&tempSt.baseStrength,&tempSt.no)==5)//5表示正常输入
         {
@@ -172,12 +175,15 @@ int main()
     }
     //线性存储各个基站数据
 
-    for(int i=1;i<Stations.size();i++)
+    for(int i=1;i<Stations.size();i++)//基站信息添加到四叉树
     {
         addStationToTree(Stations[i]);
         cout<<"[LOG]Added St#"<<Stations[i].no<<" \tPosition("<<Stations[i].x<<","<<Stations[i].y<<") \t to the Quad Tree."<<endl;
     }
     //将基站存储到四叉树中
+
+
+    
     deleteMap(&MapRoot);//释放四叉树占用的空间
     return 0;
 }
