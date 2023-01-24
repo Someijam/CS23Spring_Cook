@@ -19,7 +19,7 @@ struct QuadTreeNode//四叉树结构
     int y; // 节点的坐标(中心位置)
     int level; // 节点的级别(整张图最中间为0级，逐级增加)
     //quarterWidth=pow(2,17-level)
-    QuadTreeNode* children[4]; // 子节点，最多有4个
+    QuadTreeNode* children[4];//={NULL}; // 子节点，最多有4个
     QuadTreeNode* parent;//上级节点
     bool isLeaf; // 是否为叶节点
     vector<int> includedStationNo;//此区域(节点)内所有基站编号/序号，没有则size为0
@@ -65,6 +65,10 @@ void diverseTree(QuadTreeNode* leaf)//将此树叶分为四个子节点
         leaf->children[i]->isLeaf=true;
         leaf->children[i]->level=leaf->level+1; 
         leaf->children[i]->parent=leaf;
+        for(int j=0;j<4;j++)
+        {
+            leaf->children[i]->children[j]=NULL;
+        }
         if(i==0)
         {
             leaf->children[i]->x=leaf->x+leaf->quarterWidth();
@@ -135,6 +139,7 @@ void deleteMap(QuadTreeNode* head)//释放四叉树空间
     {
         cout<<"Deleted a stem in level#"<<head->level<<endl;
         delete head;//MapRoot不是动态分配，不显式删除
+        head=NULL;
     }
     return;
 }
@@ -168,7 +173,7 @@ int main()
     for(int i=1;i<Stations.size();i++)
     {
         addStationToTree(Stations[i]);
-        // cout<<"Added St#"<<Stations[i].no<<" \tPosition("<<Stations[i].x<<","<<Stations[i].y<<") \t to the Quad Tree."<<endl;
+        cout<<"Added St#"<<Stations[i].no<<" \tPosition("<<Stations[i].x<<","<<Stations[i].y<<") \t to the Quad Tree."<<endl;
     }
     //将基站存储到四叉树中
     deleteMap(&MapRoot);//释放四叉树占用的空间
