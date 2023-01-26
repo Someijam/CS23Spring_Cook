@@ -20,7 +20,7 @@ void diverseTree(QuadTreeNode* leaf)//将此树叶分为四个子节点
 {
     if(!leaf->isLeaf)
     {
-        cerr<<"["<<fDate<<" "<<fTime<<"]"<<"[TDIV/ERR]此种情况绝对不会出现，除非是见鬼了：尝试将四叉树的非叶节点再次四分"<<endl;
+        cerr<<"["<<fTime<<"]"<<"[TDIV/ERR]此种情况绝对不会出现，除非是见鬼了：尝试将四叉树的非叶节点再次四分"<<endl;
         exit(0);
     }
     for(int i=0;i<4;i++)
@@ -84,7 +84,7 @@ void addStationToTree(Station st)//将基站st添加到四叉树
     }//叶节点满了就转移到子节点稍后再插入
     else
     {
-        cerr<<"["<<fDate<<" "<<fTime<<"]"<<"[STAD/ERR]此种情况绝对不会出现，除非是见鬼了：insertTarget->includedStationNo.size()="<<insertTarget->includedStationNo.size()<<endl;
+        cerr<<"["<<fTime<<"]"<<"[STAD/ERR]此种情况绝对不会出现，除非是见鬼了：insertTarget->includedStationNo.size()="<<insertTarget->includedStationNo.size()<<endl;
         exit(0);
     }
 
@@ -101,7 +101,7 @@ void deleteMap(QuadTreeNode* head)//释放四叉树空间
     }
     if(head->level!=0)
     {
-        cout<<"["<<fDate<<" "<<fTime<<"]"<<"[Main/INFO]Deleted a stem in level#"<<head->level<<endl;
+        cout<<"["<<fTime<<"]"<<"[Main/INFO]Deleted a stem in level#"<<head->level<<endl;
         delete head;//MapRoot不是动态分配，不显式删除
         head=NULL;
     }

@@ -74,7 +74,7 @@ int main()
     for(int i=1;i<Stations.size();i++)//基站信息添加到四叉树
     {
         addStationToTree(Stations[i]);
-        cout<<"["<<fDate<<" "<<fTime<<"]"<<"[Main/INFO]"<<"Added St#"<<Stations[i].no<<" \tPosition("<<Stations[i].x<<","<<Stations[i].y<<") \t to the Quad Tree."<<endl;
+        cout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"Added St#"<<Stations[i].no<<" \tPosition("<<Stations[i].x<<","<<Stations[i].y<<") \t to the Quad Tree."<<endl;
     }
     //将基站存储到四叉树中
 
