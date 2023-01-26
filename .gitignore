@@ -7,4 +7,4 @@
 #ignore debug folder
 *.dSYM
 #ignore exec file
-main
+logs/*.log
