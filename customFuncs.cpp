@@ -1,5 +1,7 @@
 #include"customHeaders.h"//其他头文件在此文件中
 
+using namespace std;
+
 int QuadTreeNode::quarterWidth()//当前节点四分之一边长
 {
     return pow(2,BORDER_EXP-1-(this->level));

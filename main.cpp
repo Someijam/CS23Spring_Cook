@@ -6,6 +6,8 @@ CSpring_Cook
 */
 #include"customHeaders.h"//其他头文件在此文件中
 
+using namespace std;
+
 vector<Station> Stations;
 QuadTreeNode MapRoot;
 time_t now = time(0);
@@ -16,22 +18,27 @@ string fTime="";
 
 int main()
 {
-    fDate=fDate+to_string(1900 + ltm->tm_year);
-    fDate=fDate+"-";
-    if(1+ltm->tm_mon<10)fDate=fDate+"0";
-    fDate=fDate+to_string(1 + ltm->tm_mon);
-    fDate=fDate+"-";
-    if(ltm->tm_mday<10)fDate=fDate+"0";
-    fDate=fDate+to_string(ltm->tm_mday);
+    auto setDateTime=[]()
+    {
+        fDate=fDate+to_string(1900 + ltm->tm_year);
+        fDate=fDate+"-";
+        if(1+ltm->tm_mon<10)fDate=fDate+"0";
+        fDate=fDate+to_string(1 + ltm->tm_mon);
+        fDate=fDate+"-";
+        if(ltm->tm_mday<10)fDate=fDate+"0";
+        fDate=fDate+to_string(ltm->tm_mday);
 
-    if(ltm->tm_hour<10)fTime=fTime+"0";
-    fTime=fTime+to_string(ltm->tm_hour);
-    fTime=fTime+":";
-    if(ltm->tm_min<10)fTime=fTime+"0";
-    fTime=fTime+to_string(ltm->tm_min);
-    fTime=fTime+":";
-    if(ltm->tm_sec<10)fTime=fTime+"0";
-    fTime=fTime+to_string(ltm->tm_sec);
+        if(ltm->tm_hour<10)fTime=fTime+"0";
+        fTime=fTime+to_string(ltm->tm_hour);
+        fTime=fTime+":";
+        if(ltm->tm_min<10)fTime=fTime+"0";
+        fTime=fTime+to_string(ltm->tm_min);
+        fTime=fTime+":";
+        if(ltm->tm_sec<10)fTime=fTime+"0";
+        fTime=fTime+to_string(ltm->tm_sec);
+    };//此函数仅使用一次，采用Lambda表达式，截取外部作用域中所有变量，并作为引用在函数体中使用
+
+    setDateTime();
 
     int fOpenStatus=0;
     freopen("./test_data/jz001.txt", "r", stdin);//测试输入
