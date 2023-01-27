@@ -7,6 +7,12 @@
 
 当前任务：无GUI的Demo版本
 
+·Task2
+
+---
+
+## 统计信息：
+
 jz001: maxBaseStrength=1.0490 
 
 &emsp;maxX=109579     maxY=39820 
