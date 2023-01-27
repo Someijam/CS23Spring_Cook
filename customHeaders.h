@@ -44,6 +44,12 @@ extern char* presentDateTime;
 extern tm* ltm;
 extern string fDate;
 extern string fTime;
+extern FILE* fJZin;
+extern FILE* fWZin;
+extern FILE* fYDin;
+extern FILE* fLOGout;
+extern FILE* fAREAout;
+
 //函数声明
 int defineWhichQuadrant(Station* st,QuadTreeNode* tree);//查找这个基站相对于当前中心的象限
 void diverseTree(QuadTreeNode* leaf);//将此树叶分为四个子节点

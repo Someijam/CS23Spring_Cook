@@ -15,6 +15,11 @@ char* presentDateTime = ctime(&now);
 tm* ltm = localtime(&now);
 string fDate="";
 string fTime="";
+FILE* fJZin;
+FILE* fWZin;
+FILE* fYDin;
+FILE* fLOGout;
+FILE* fAREAout;
 
 int main()
 {
@@ -40,13 +45,22 @@ int main()
 
     setDateTime();
 
-    int fOpenStatus=0;
-    freopen("./test_data/jz001.txt", "r", stdin);//测试输入
+    fJZin=freopen("./test_data/jz001.txt", "r", stdin);//默认是基站输入
+    if(!fJZin)//检验文件是否打开
+    {
+        cerr<<"基站数据文件不存在的，是不是输错了？"<<endl;
+        exit(0);
+    }
     string cmdLogPath="./logs/"+fDate;
     cmdLogPath=cmdLogPath+"_";
     cmdLogPath=cmdLogPath+fTime;
     cmdLogPath=cmdLogPath+".log";
-    freopen(cmdLogPath.c_str(), "w", stdout);//日志文件
+    fLOGout=freopen(cmdLogPath.c_str(), "w", stdout);//日志文件
+    if(!fJZin)//检验日志是否打开
+    {
+        cerr<<"日志文件不存在的，是不是输错了？"<<endl;
+        exit(0);
+    }
 
     MapRoot.x=0;
     MapRoot.y=0;
@@ -69,6 +83,10 @@ int main()
             Stations.push_back(tempSt);
         }
     }
+    else
+    {
+        cerr<<"["<<fTime<<"]"<<"[Main/ERR]"<<"基站文件头部有误"<<endl;
+    }
     //线性存储各个基站数据
 
     for(int i=1;i<Stations.size();i++)//基站信息添加到四叉树
@@ -79,6 +97,9 @@ int main()
     //将基站存储到四叉树中
 
 
+
     deleteMap(&MapRoot);//释放四叉树占用的空间
+    fclose(fJZin);
+    fclose(fLOGout);
     return 0;
 }
