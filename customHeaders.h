@@ -1,5 +1,6 @@
 //工程全部的头文件
 #include<iostream>
+#include<iomanip>
 #include<algorithm>
 #include<cmath>
 #include<cstdio>
@@ -7,8 +8,8 @@
 #include<vector>
 #include<ctime>
 //宏定义
-#define BORDER_EXP 17
-
+#define BORDER_EXP 17//地图尺寸指数
+#define MAX_UNIT_NUNS (int)9//单分块最大基站数
 //名字空间
 using namespace std;
 
@@ -49,9 +50,14 @@ extern FILE* fWZin;
 extern FILE* fYDin;
 extern FILE* fLOGout;
 extern FILE* fAREAout;
+extern FILE* fSWITCHout;
 
 //函数声明
+void setDateTime();//更新日期和时间
 int defineWhichQuadrant(Station* st,QuadTreeNode* tree);//查找这个基站相对于当前中心的象限
 void diverseTree(QuadTreeNode* leaf);//将此树叶分为四个子节点
 void addStationToTree(Station st);//将基站st添加到四叉树
 void deleteMap(QuadTreeNode* head);//释放四叉树空间
+void task1Traverse();//任务1:遍历西北角和东南角的基站
+void task1PreOrderTraverse_1(QuadTreeNode* T);//遍历最大地图的整个西北区域
+void task1PreOrderTraverse_2(QuadTreeNode* T);//一直往西北找的最小区域，备用

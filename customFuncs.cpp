@@ -7,6 +7,29 @@ int QuadTreeNode::quarterWidth()//当前节点四分之一边长
     return pow(2,BORDER_EXP-1-(this->level));
 }
 
+void setDateTime()//更新时间
+{
+    now = time(0);
+    ltm = localtime(&now);
+    fDate="";
+    fDate=fDate+to_string(1900 + ltm->tm_year);
+    fDate=fDate+"-";
+    if(1+ltm->tm_mon<10)fDate=fDate+"0";
+    fDate=fDate+to_string(1 + ltm->tm_mon);
+    fDate=fDate+"-";
+    if(ltm->tm_mday<10)fDate=fDate+"0";
+    fDate=fDate+to_string(ltm->tm_mday);
+    fTime="";
+    if(ltm->tm_hour<10)fTime=fTime+"0";
+    fTime=fTime+to_string(ltm->tm_hour);
+    fTime=fTime+":";
+    if(ltm->tm_min<10)fTime=fTime+"0";
+    fTime=fTime+to_string(ltm->tm_min);
+    fTime=fTime+":";
+    if(ltm->tm_sec<10)fTime=fTime+"0";
+    fTime=fTime+to_string(ltm->tm_sec);
+}
+
 int defineWhichQuadrant(Station* st,QuadTreeNode* tree)//查找这个基站相对于当前中心的象限
 {
     if((st->x-tree->x>0)&&(st->y-tree->y>=0))return 0;
@@ -20,6 +43,7 @@ void diverseTree(QuadTreeNode* leaf)//将此树叶分为四个子节点
 {
     if(!leaf->isLeaf)
     {
+        setDateTime();//更新日志文件里的时间
         cerr<<"["<<fTime<<"]"<<"[TDIV/ERR]此种情况绝对不会出现，除非是见鬼了：尝试将四叉树的非叶节点再次四分"<<endl;
         exit(0);
     }
@@ -66,11 +90,11 @@ void addStationToTree(Station st)//将基站st添加到四叉树
         insertTarget=insertTarget->children[defineWhichQuadrant(&st,insertTarget)];
     }
     //将insertTargrt定位到需要插入的位置
-    if((insertTarget->includedStationNo.size()<9)&&(insertTarget->includedStationNo.size()>=0))
+    if((insertTarget->includedStationNo.size()<MAX_UNIT_NUNS)&&(insertTarget->includedStationNo.size()>=0))
     {
         insertTarget->includedStationNo.push_back(st.no);
     }//叶节点没有满则继续插入
-    else if(insertTarget->includedStationNo.size()==9)
+    else if(insertTarget->includedStationNo.size()==MAX_UNIT_NUNS)
     {
         diverseTree(insertTarget);
         for(int i=0;i<insertTarget->includedStationNo.size();i++)
@@ -84,6 +108,7 @@ void addStationToTree(Station st)//将基站st添加到四叉树
     }//叶节点满了就转移到子节点稍后再插入
     else
     {
+        setDateTime();//更新日志文件里的时间
         cerr<<"["<<fTime<<"]"<<"[STAD/ERR]此种情况绝对不会出现，除非是见鬼了：insertTarget->includedStationNo.size()="<<insertTarget->includedStationNo.size()<<endl;
         exit(0);
     }
@@ -101,9 +126,51 @@ void deleteMap(QuadTreeNode* head)//释放四叉树空间
     }
     if(head->level!=0)
     {
+        setDateTime();//更新日志文件里的时间
         cout<<"["<<fTime<<"]"<<"[Main/INFO]Deleted a stem in level#"<<head->level<<endl;
         delete head;//MapRoot不是动态分配，不显式删除
         head=NULL;
     }
     return;
 }
+
+void task1Traverse()//任务1:遍历西北角和东南角的基站
+{
+    cout<<"西北角基站数据："<<endl;
+    QuadTreeNode* NWPartRoot=MapRoot.children[1];
+    task1PreOrderTraverse_1(NWPartRoot);
+    cout<<"东南角基站数据："<<endl;
+    QuadTreeNode* SEPartRoot=MapRoot.children[3];
+    task1PreOrderTraverse_1(SEPartRoot);
+    cout<<"完成。"<<endl;
+    return;
+}
+
+void task1PreOrderTraverse_1(QuadTreeNode* T)//遍历最大地图的整个子区域
+{
+    if(!T)return;
+    else
+    {
+        if(T->isLeaf)
+        {
+            for(int i=0;i<T->includedStationNo.size();i++)
+            {
+                if(Stations[T->includedStationNo[i]].x!=0&&Stations[T->includedStationNo[i]].y!=0)
+                {
+                    cout<<"基站#"<<Stations[T->includedStationNo[i]].no<<":"<<"\t"<<"坐标("<<Stations[T->includedStationNo[i]].x<<","<<Stations[T->includedStationNo[i]].y<<")"<<"\t"<<"类别:"<<Stations[T->includedStationNo[i]].typeName<<"\t"<<"相对强度:"<<setiosflags(ios::fixed)<<setprecision(4)<<Stations[T->includedStationNo[i]].baseStrength<<resetiosflags(ios::fixed)<<endl;
+                }
+            }
+        }
+        for(int i=0;i<4;i++)
+        {
+            task1PreOrderTraverse_1(T->children[i]);
+        }
+    }
+    return;
+}
+
+void task1PreOrderTraverse_2(QuadTreeNode* T)//一直往西北找的最小区域，备用
+{
+    return;
+}
+
