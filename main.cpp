@@ -2,7 +2,7 @@
 Author:Someijam
 Date:2023/01/14
 Problem description:
-CSpring_Cook
+CS23pring_Cook
 */
 #include"customHeaders.h"//其他头文件在此文件中
 
@@ -16,11 +16,6 @@ string fDate="";
 string fTime="";
 
 FILE* fJZin;
-// FILE* fWZin;
-// FILE* fYDin;
-// FILE* fLOGout;
-// FILE* ftask1out;
-// FILE* fSWITCHout;
 
 ifstream jzin;
 ifstream wzin;
@@ -53,7 +48,8 @@ int main()
     MapRoot.isLeaf=true;
     MapRoot.parent=NULL;
 
-    readJzFile();
+    string jzfile="./test_data/jz001.txt";
+    readJzFile(jzfile);
     //线性存储各个基站数据到内存，免得频繁磁盘IO
     for(int i=1;i<Stations.size();i++)//基站信息添加到四叉树
     {

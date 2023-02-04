@@ -30,13 +30,13 @@ void setDateTime()//更新时间
     fTime=fTime+to_string(ltm->tm_sec);
 }
 
-void readJzFile()//将基站文件读入内存
+void readJzFile(string jzfile)//将基站文件读入内存
 {
     Station tempSt={0};
     Stations.push_back(tempSt);
     char inputType[5]={0};
 
-    fJZin=freopen("./test_data/jz001.txt", "r", stdin);//默认是基站输入
+    fJZin=freopen(jzfile.c_str(), "r", stdin);//默认是基站输入
     if(!fJZin)//检验文件是否打开
     {
         cerr<<"基站数据文件不存在的，是不是输错了？"<<endl;
