@@ -1,5 +1,6 @@
 //工程全部的头文件
 #include<iostream>
+#include<fstream>
 #include<iomanip>
 #include<algorithm>
 #include<cmath>
@@ -45,15 +46,24 @@ extern char* presentDateTime;
 extern tm* ltm;
 extern string fDate;
 extern string fTime;
+
 extern FILE* fJZin;
-extern FILE* fWZin;
-extern FILE* fYDin;
-extern FILE* fLOGout;
-extern FILE* fAREAout;
-extern FILE* fSWITCHout;
+// extern FILE* fWZin;
+// extern FILE* fYDin;
+// extern FILE* fLOGout;
+// extern FILE* fAREAout;
+// extern FILE* fSWITCHout;
+
+extern ifstream jzin;
+extern ifstream wzin;
+extern ifstream ydin;
+extern ofstream logout;
+extern ofstream areaout;
+extern ofstream switchout;
 
 //函数声明
 void setDateTime();//更新日期和时间
+void readJzFile();//将基站文件读入内存
 int defineWhichQuadrant(Station* st,QuadTreeNode* tree);//查找这个基站相对于当前中心的象限
 void diverseTree(QuadTreeNode* leaf);//将此树叶分为四个子节点
 void addStationToTree(Station st);//将基站st添加到四叉树
