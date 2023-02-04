@@ -58,8 +58,11 @@ extern ifstream jzin;
 extern ifstream wzin;
 extern ifstream ydin;
 extern ofstream logout;
-extern ofstream areaout;
-extern ofstream switchout;
+extern ofstream task1out;
+extern ofstream task2out;
+extern ofstream task3out;
+extern ofstream task4out;
+extern ofstream task5out;
 
 //函数声明
 void setDateTime();//更新日期和时间

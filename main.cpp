@@ -19,15 +19,18 @@ FILE* fJZin;
 // FILE* fWZin;
 // FILE* fYDin;
 // FILE* fLOGout;
-// FILE* fAREAout;
+// FILE* ftask1out;
 // FILE* fSWITCHout;
 
 ifstream jzin;
 ifstream wzin;
 ifstream ydin;
 ofstream logout;
-ofstream areaout;
-ofstream switchout;
+ofstream task1out;
+ofstream task2out;
+ofstream task3out;
+ofstream task4out;
+ofstream task5out;
 
 int main()
 {
@@ -41,7 +44,7 @@ int main()
     // jzin.open("./test_data/jz001.txt",ios::in);//基站输入
     wzin.open("./test_data/wz001.txt",ios::in);//伪基站输入
     ydin.open("./test_data/yd001.txt",ios::in);//移动轨迹输入
-    areaout.open("./outputs/task1.out",ios::out);//打开用于输出答案的文件
+    task1out.open("./outputs/task1.out",ios::out);//打开用于输出答案的文件
     logout.open(cmdLogPath.c_str(),ios::out);//日志文件
 
     MapRoot.x=0;

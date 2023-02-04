@@ -180,13 +180,13 @@ void deleteMap(QuadTreeNode* head)//释放四叉树空间
 
 void task1Traverse()//任务1:遍历西北角和东南角的基站
 {
-    areaout<<"西北角基站数据："<<endl;
+    task1out<<"西北角基站数据："<<endl;
     QuadTreeNode* NWPartRoot=MapRoot.children[1];
     task1PreOrderTraverse_1(NWPartRoot);
-    areaout<<"东南角基站数据："<<endl;
+    task1out<<"东南角基站数据："<<endl;
     QuadTreeNode* SEPartRoot=MapRoot.children[3];
     task1PreOrderTraverse_1(SEPartRoot);
-    areaout<<"完成。"<<endl;
+    task1out<<"完成。"<<endl;
     return;
 }
 
@@ -201,7 +201,7 @@ void task1PreOrderTraverse_1(QuadTreeNode* T)//遍历最大地图的整个子区
             {
                 if(Stations[T->includedStationNo[i]].x!=0&&Stations[T->includedStationNo[i]].y!=0)
                 {
-                    areaout<<"基站#"<<Stations[T->includedStationNo[i]].no<<":"<<"\t"<<"坐标("<<Stations[T->includedStationNo[i]].x<<","<<Stations[T->includedStationNo[i]].y<<")"<<"\t"<<"类别:"<<Stations[T->includedStationNo[i]].typeName<<"\t"<<"相对强度:"<<setiosflags(ios::fixed)<<setprecision(4)<<Stations[T->includedStationNo[i]].baseStrength<<resetiosflags(ios::fixed)<<endl;
+                    task1out<<"基站#"<<Stations[T->includedStationNo[i]].no<<":"<<"\t"<<"坐标("<<Stations[T->includedStationNo[i]].x<<","<<Stations[T->includedStationNo[i]].y<<")"<<"\t"<<"类别:"<<Stations[T->includedStationNo[i]].typeName<<"\t"<<"相对强度:"<<setiosflags(ios::fixed)<<setprecision(4)<<Stations[T->includedStationNo[i]].baseStrength<<resetiosflags(ios::fixed)<<endl;
                 }
             }
         }
