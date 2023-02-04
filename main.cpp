@@ -52,7 +52,6 @@ int main()
 
     readJzFile();
     //线性存储各个基站数据到内存，免得频繁磁盘IO
-
     for(int i=1;i<Stations.size();i++)//基站信息添加到四叉树
     {
         addStationToTree(Stations[i]);

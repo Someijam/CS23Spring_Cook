@@ -45,7 +45,7 @@ void readJzFile()//将基站文件读入内存
     cin>>inputType;
     if(strcmp(inputType,"JZ")==0)//基站信息录入
     {
-        while(scanf("%d,%d,%s  %lf,%d",&tempSt.x,&tempSt.y,tempSt.typeName,&tempSt.baseStrength,&tempSt.no)==5)//5表示正常输入
+        while(scanf("%d,%d,%s %lf,%d",&tempSt.x,&tempSt.y,tempSt.typeName,&tempSt.baseStrength,&tempSt.no)==5)//5表示正常输入
         {
             if(strcmp(tempSt.typeName,"城区")==0)tempSt.type=0;
             else if(strcmp(tempSt.typeName,"乡镇")==0)tempSt.type=1;
