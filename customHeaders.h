@@ -46,6 +46,8 @@ extern char* presentDateTime;
 extern tm* ltm;
 extern string fDate;
 extern string fTime;
+extern bool task1_2Finished;
+extern bool task1_3Finished;
 
 extern FILE* fJZin;
 
@@ -69,3 +71,4 @@ void deleteMap(QuadTreeNode* head);//释放四叉树空间
 void task1Traverse();//任务1:遍历西北角和东南角的基站
 void task1PreOrderTraverse_1(QuadTreeNode* T);//遍历最大地图的整个西北区域
 void task1PreOrderTraverse_2(QuadTreeNode* T);//一直往西北找的最小区域，备用
+void task1PreOrderTraverse_3(QuadTreeNode* T);//一直往东南找的最小区域，备用
