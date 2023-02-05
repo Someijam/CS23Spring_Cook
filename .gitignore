@@ -6,5 +6,8 @@
 *.pdf
 #ignore debug folder
 *.dSYM
-#ignore exec file
+#ignore log file
 logs/*.log
+#ignore picture
+hints/
+hints/*

@@ -30,12 +30,59 @@ void setDateTime()//更新时间
     fTime=fTime+to_string(ltm->tm_sec);
 }
 
-void readJzFile(string jzfile)//将基站文件读入内存
+void readJzFile()//将基站文件读入内存
 {
     Station tempSt={0};
     Stations.push_back(tempSt);
     char inputType[5]={0};
 
+    string jzfile="./test_data/jz001.txt";
+    fJZin=freopen(jzfile.c_str(), "r", stdin);//默认是基站输入
+    if(!fJZin)//检验文件是否打开
+    {
+        cerr<<"基站数据文件不存在的，是不是输错了？"<<endl;
+        exit(0);
+    }
+    cin>>inputType;
+    if(strcmp(inputType,"JZ")==0)//基站信息录入
+    {
+        while(scanf("%d,%d,%s %lf,%d",&tempSt.x,&tempSt.y,tempSt.typeName,&tempSt.baseStrength,&tempSt.no)==5)//5表示正常输入
+        {
+            if(strcmp(tempSt.typeName,"城区")==0)tempSt.type=0;
+            else if(strcmp(tempSt.typeName,"乡镇")==0)tempSt.type=1;
+            else if(strcmp(tempSt.typeName,"高速")==0)tempSt.type=2;
+            else 
+            {
+                setDateTime();//更新日志文件里的时间
+                logout<<"["<<fTime<<"]"<<"[Main/ERR]"<<"基站文件中基站类型不与城区乡镇和高速的任意一种匹配，请检查如下基站:编号#"<<tempSt.no<<endl;
+            }
+            Stations.push_back(tempSt);
+        }
+        if(tempSt.x!=-1||tempSt.y!=-1)
+        {
+            setDateTime();//更新日志文件里的时间
+            logout<<"["<<fTime<<"]"<<"[Main/ERR]"<<"基站文件尾部或格式有误，检查是否为jz001.txt的错误版本"<<tempSt.no<<endl;
+            exit(0);
+        }
+    }
+    else
+    {
+        setDateTime();//更新日志文件里的时间
+        logout<<"["<<fTime<<"]"<<"[Main/ERR]"<<"基站文件头部有误"<<endl;
+        exit(0);
+    }
+    fclose(fJZin);
+
+    // ofstream positionout;
+    // positionout.open("./hints/positions2_express.txt",ios::out);
+    // for(int i=0;i<Stations.size();i++)
+    // {
+    //     if(Stations[i].type==2)
+    //         positionout<<Stations[i].x<<" "<<Stations[i].y<<endl;
+    // }
+    // exit(0);
+
+    jzfile="./test_data/jz002.txt";
     fJZin=freopen(jzfile.c_str(), "r", stdin);//默认是基站输入
     if(!fJZin)//检验文件是否打开
     {
