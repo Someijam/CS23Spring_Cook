@@ -26,6 +26,7 @@ struct QuadTreeNode//四叉树结构
     QuadTreeNode* parent;//上级节点
     bool isLeaf; // 是否为叶节点
     vector<int> includedStationNo;//此区域(节点)内所有基站编号/序号，没有则size为0
+    pair<int,int> prefix;//分别表示x和y方向的象限记录
     int quarterWidth();
 };
 struct Station//基站信息

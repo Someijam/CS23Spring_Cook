@@ -50,6 +50,8 @@ int main()
     MapRoot.level=0;
     MapRoot.isLeaf=true;
     MapRoot.parent=NULL;
+    MapRoot.prefix.first=0;
+    MapRoot.prefix.second=0;
 
     readJzFile();
     //线性存储各个基站数据到内存，免得频繁磁盘IO

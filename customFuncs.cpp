@@ -144,6 +144,10 @@ void diverseTree(QuadTreeNode* leaf)//将此树叶分为四个子节点
         leaf->children[i]->isLeaf=true;
         leaf->children[i]->level=leaf->level+1; 
         leaf->children[i]->parent=leaf;
+
+        leaf->children[i]->prefix.first=leaf->prefix.first<<1;
+        leaf->children[i]->prefix.second=leaf->prefix.second<<1;//编号
+
         for(int j=0;j<4;j++)
         {
             leaf->children[i]->children[j]=NULL;
@@ -152,11 +156,14 @@ void diverseTree(QuadTreeNode* leaf)//将此树叶分为四个子节点
         {
             leaf->children[i]->x=leaf->x+leaf->quarterWidth();
             leaf->children[i]->y=leaf->y+leaf->quarterWidth();
+            leaf->children[i]->prefix.first++;//(1,1)
+            leaf->children[i]->prefix.second++;//编号
         }
         else if(i==1)
         {
             leaf->children[i]->x=leaf->x-leaf->quarterWidth();
             leaf->children[i]->y=leaf->y+leaf->quarterWidth();
+            leaf->children[i]->prefix.second++;//编号(0,1)
         }
         else if(i==2)
         {
@@ -167,6 +174,7 @@ void diverseTree(QuadTreeNode* leaf)//将此树叶分为四个子节点
         {
             leaf->children[i]->x=leaf->x+leaf->quarterWidth();
             leaf->children[i]->y=leaf->y-leaf->quarterWidth();
+            leaf->children[i]->prefix.first++;//编号(1,1)
         }
     }
     leaf->isLeaf=false;
