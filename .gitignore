@@ -11,3 +11,5 @@ logs/*.log
 #ignore picture
 hints/
 hints/*
+#ignore .sh
+debug.sh
