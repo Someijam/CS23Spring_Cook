@@ -7,6 +7,7 @@
 #include<cstdio>
 #include<cstdlib>
 #include<vector>
+#include<bitset>
 #include<ctime>
 //宏定义
 #define BORDER_EXP 17//地图尺寸指数
@@ -27,7 +28,11 @@ struct QuadTreeNode//四叉树结构
     bool isLeaf; // 是否为叶节点
     vector<int> includedStationNo;//此区域(节点)内所有基站编号/序号，没有则size为0
     pair<int,int> prefix;//分别表示x和y方向的象限记录
-    int quarterWidth();
+    int quarterWidth();//该区块1/4边长
+    QuadTreeNode* northNode();//北侧区块
+    QuadTreeNode* southNode();//南侧区块
+    QuadTreeNode* eastNode();//东侧区块
+    QuadTreeNode* westNode();//西侧区块
 };
 struct Station//基站信息
 {
@@ -49,6 +54,8 @@ extern string fDate;
 extern string fTime;
 extern bool task1_2Finished;
 extern bool task1_3Finished;
+extern QuadTreeNode* NW_estChunk;//最西北角区块地址
+extern QuadTreeNode* SE_estChunk;//最东南角区块地址
 
 extern FILE* fJZin;
 
@@ -70,6 +77,8 @@ void diverseTree(QuadTreeNode* leaf);//将此树叶分为四个子节点
 void addStationToTree(Station st);//将基站st添加到四叉树
 void deleteMap(QuadTreeNode* head);//释放四叉树空间
 void task1Traverse();//任务1:遍历西北角和东南角的基站
-void task1PreOrderTraverse_1(QuadTreeNode* T);//遍历最大地图的整个西北区域
 void task1PreOrderTraverse_2(QuadTreeNode* T);//一直往西北找的最小区域，备用
 void task1PreOrderTraverse_3(QuadTreeNode* T);//一直往东南找的最小区域，备用
+void task2PreOrderTraverse_1(QuadTreeNode* T);//任务2:遍历区域1
+void task2PreOrderTraverse_2(QuadTreeNode* T);//任务2:遍历整个子区域2
+void task2Process();//任务2:遍历指定区块的相邻区块基站

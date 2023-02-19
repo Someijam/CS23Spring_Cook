@@ -17,6 +17,8 @@ string fDate="";
 string fTime="";
 bool task1_2Finished=false;
 bool task1_3Finished=false;
+QuadTreeNode* NW_estChunk;//最西北角区块地址
+QuadTreeNode* SE_estChunk;//最东南角区块地址
 
 FILE* fJZin;
 
@@ -42,7 +44,9 @@ int main()
     // jzin.open("./test_data/jz001.txt",ios::in);//基站输入
     wzin.open("./test_data/wz001.txt",ios::in);//伪基站输入
     ydin.open("./test_data/yd001.txt",ios::in);//移动轨迹输入
-    task1out.open("./outputs/task1.out",ios::out);//打开用于输出答案的文件
+    task1out.open("./outputs/task1.out",ios::out);
+    task2out.open("./outputs/task2.out",ios::out);
+    //打开用于输出答案的文件
     logout.open(cmdLogPath.c_str(),ios::out);//日志文件
 
     MapRoot.x=0;
@@ -75,8 +79,13 @@ int main()
     /*****************任务1结束*****************/
 
     /******************任务2******************/
-    logout<<"["<<fTime<<"]"<<"[Main/WARN]"<<"需求文档未定义\"西北角树叶的东侧树叶\"、\"南侧相邻树叶\"、\"东南角所在树叶的西北侧\"以及\"西北侧的北侧相邻树叶\""<<endl;
-    logout<<"["<<fTime<<"]"<<"[Main/WARN]"<<"将跳过任务2"<<endl;
+    // logout<<"["<<fTime<<"]"<<"[Main/WARN]"<<"需求文档未定义\"西北角树叶的东侧树叶\"、\"南侧相邻树叶\"、\"东南角所在树叶的西北侧\"以及\"西北侧的北侧相邻树叶\""<<endl;
+    // logout<<"["<<fTime<<"]"<<"[Main/WARN]"<<"将跳过任务2"<<endl;
+    setDateTime();//更新日志文件里的时间
+    logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"即将执行Task2，请前往\"outputs/task2.out\"下查看输出结果。"<<endl;
+    task2Process();
+    setDateTime();//更新日志文件里的时间
+    logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"Task2已完成。"<<endl;
     /*****************任务2结束*****************/
 
 
