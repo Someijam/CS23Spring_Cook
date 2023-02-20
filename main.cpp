@@ -19,6 +19,7 @@ bool task1_2Finished=false;
 bool task1_3Finished=false;
 QuadTreeNode* NW_estChunk;//最西北角区块地址
 QuadTreeNode* SE_estChunk;//最东南角区块地址
+QuadTreeNode* SE_nwChunk;//东南角区块的西北小区块地址
 
 FILE* fJZin;
 
@@ -87,6 +88,14 @@ int main()
     setDateTime();//更新日志文件里的时间
     logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"Task2已完成。"<<endl;
     /*****************任务2结束*****************/
+
+    /******************任务3******************/
+    setDateTime();//更新日志文件里的时间
+    logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"即将执行Task3，请前往\"outputs/task3.out\"下查看输出结果。"<<endl;
+    task2Process();
+    setDateTime();//更新日志文件里的时间
+    logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"Task3已完成。"<<endl;
+    /*****************任务3结束*****************/
 
 
 

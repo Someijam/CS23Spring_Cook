@@ -308,10 +308,10 @@ void deleteMap(QuadTreeNode* head)//释放四叉树空间
 
 void task1Traverse()//任务1:遍历西北角和东南角的基站
 {
-    task1out<<"西北角区块基站数据："<<endl;
+    task1out<<"[ANS-Main/1-2]西北角区块基站数据："<<endl;
     QuadTreeNode* NWPartRoot=MapRoot.children[1];
     task1PreOrderTraverse_2(NWPartRoot);
-    task1out<<"东南角区块基站数据："<<endl;
+    task1out<<"[ANS-Main/1-3]东南角区块基站数据："<<endl;
     QuadTreeNode* SEPartRoot=MapRoot.children[3];
     task1PreOrderTraverse_3(SEPartRoot);
     task1out<<"完成。"<<endl;
@@ -443,8 +443,9 @@ void task2PreOrderTraverse_3(QuadTreeNode* T)//任务2:遍历最东南角西北�
     if(!T)return;
     else
     {
-        if(T->isLeaf&&(T->southNode()->eastNode()==SE_estChunk))
+        if(T->isLeaf&&(T->southNode()->eastNode()==SE_estChunk)&&(T->eastNode()->southNode()==SE_estChunk))
         {
+            SE_nwChunk=T;
             task2out<<"#Lv."<<T->level<<" 区块：("<<T->x-2*T->quarterWidth()<<"<=x<="<<T->x+2*T->quarterWidth()<<"),\t ("<<T->y-2*T->quarterWidth()<<"<=y<="<<T->y+2*T->quarterWidth()<<")"<<endl;
             // task1out<<"X:"<<T->prefix.first<<'\t'<<"Y:"<<T->prefix.second<<endl;
             for(int i=0;i<T->includedStationNo.size();i++)
@@ -464,30 +465,57 @@ void task2PreOrderTraverse_3(QuadTreeNode* T)//任务2:遍历最东南角西北�
     return;
 }
 
-void task2Process()
+void task2PreOrderTraverse_4(QuadTreeNode* T)//任务2:遍历最东南角西北侧再北侧的子区域
+{
+    if(!T)return;
+    else
+    {
+        if(T->isLeaf&&(T->southNode()==SE_nwChunk))
+        {
+            task2out<<"#Lv."<<T->level<<" 区块：("<<T->x-2*T->quarterWidth()<<"<=x<="<<T->x+2*T->quarterWidth()<<"),\t ("<<T->y-2*T->quarterWidth()<<"<=y<="<<T->y+2*T->quarterWidth()<<")"<<endl;
+            // task1out<<"X:"<<T->prefix.first<<'\t'<<"Y:"<<T->prefix.second<<endl;
+            for(int i=0;i<T->includedStationNo.size();i++)
+            {
+                if(Stations[T->includedStationNo[i]].x!=0&&Stations[T->includedStationNo[i]].y!=0)
+                {
+                    task2out<<"\t基站#"<<Stations[T->includedStationNo[i]].no<<":"<<"\t"<<"坐标("<<Stations[T->includedStationNo[i]].x<<","<<Stations[T->includedStationNo[i]].y<<")"<<"\t"<<"类别:"<<Stations[T->includedStationNo[i]].typeName<<"\t"<<"相对强度:"<<setiosflags(ios::fixed)<<setprecision(4)<<Stations[T->includedStationNo[i]].baseStrength<<resetiosflags(ios::fixed)<<endl;
+                }
+            }
+            if(T->includedStationNo.size()==0)task2out<<"\t此区块由其父节点分裂产生，但是没有基站"<<endl;
+        }
+        for(int i=0;i<4;i++)
+        {
+            task2PreOrderTraverse_4(T->children[i]);
+        }
+    }
+    return;
+}
+
+void task2Process()//任务2:主体调用
 {
     //最西北角的东侧
-    task2out<<"最西北角的东侧有以下树叶区块:"<<endl;
+    task2out<<"[ANS-Main/2-1]最西北角的东侧有以下树叶区块:"<<endl;
     QuadTreeNode* NW_E=NW_estChunk->eastNode();
     if(NW_E)task2PreOrderTraverse_1(NW_E);
     task2out<<"---"<<endl;
     task2out<<endl;
     //最西北角的南侧
-    task2out<<"最西北角的南侧有以下树叶区块:"<<endl;
+    task2out<<"[ANS-Main/2-2]最西北角的南侧有以下树叶区块:"<<endl;
     QuadTreeNode* NW_S=NW_estChunk->southNode();
     if(NW_S)task2PreOrderTraverse_2(NW_S);
     task2out<<"---"<<endl;
     task2out<<endl;
     //最东南角的西北侧
-    task2out<<"最东南角的西北侧有以下树叶区块:"<<endl;
+    task2out<<"[ANS-Main/2-3]最东南角的西北侧有以下树叶区块:"<<endl;
     QuadTreeNode* SE_NW=SE_estChunk->westNode()->northNode();
     if(SE_NW)task2PreOrderTraverse_3(SE_NW);
     task2out<<"---"<<endl;
     task2out<<endl;
     //最东南角西北侧的再北侧
-    task2out<<"最东南角西北侧的再北侧有以下树叶区块:"<<endl;
-    // if(SE_estChunk->eastNode()->northNode()->northNode())task1PreOrderTraverse_1(SE_estChunk->eastNode()->northNode()->northNode());
-    task2out<<"---"<<endl;
+    task2out<<"[ANS-Main/2-4]最东南角西北侧的再北侧有以下树叶区块:"<<endl;
+    QuadTreeNode* SE_NW_N=SE_nwChunk->northNode();
+    if(SE_NW_N)task2PreOrderTraverse_4(SE_NW_N);
+    task2out<<"完成"<<endl;
     return;
 }
 

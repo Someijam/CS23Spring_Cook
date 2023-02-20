@@ -56,6 +56,7 @@ extern bool task1_2Finished;
 extern bool task1_3Finished;
 extern QuadTreeNode* NW_estChunk;//最西北角区块地址
 extern QuadTreeNode* SE_estChunk;//最东南角区块地址
+extern QuadTreeNode* SE_nwChunk;//东南角区块的西北小区块地址
 
 extern FILE* fJZin;
 
@@ -83,3 +84,4 @@ void task2PreOrderTraverse_1(QuadTreeNode* T);//任务2:遍历区域1
 void task2PreOrderTraverse_2(QuadTreeNode* T);//任务2:遍历整个子区域2
 void task2Process();//任务2:遍历指定区块的相邻区块基站
 void task2PreOrderTraverse_3(QuadTreeNode* T);//任务2:遍历最东南角西北侧子区域
+void task2PreOrderTraverse_4(QuadTreeNode* T);//任务2:遍历最东南角西北侧再北侧的子区域
