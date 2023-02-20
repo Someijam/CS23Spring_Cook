@@ -92,7 +92,7 @@ int main()
     /******************任务3******************/
     setDateTime();//更新日志文件里的时间
     logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"即将执行Task3，请前往\"outputs/task3.out\"下查看输出结果。"<<endl;
-    task2Process();
+    
     setDateTime();//更新日志文件里的时间
     logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"Task3已完成。"<<endl;
     /*****************任务3结束*****************/
