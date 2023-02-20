@@ -438,6 +438,32 @@ void task2PreOrderTraverse_2(QuadTreeNode* T)//任务2:遍历最西北角南侧�
     return;
 }
 
+void task2PreOrderTraverse_3(QuadTreeNode* T)//任务2:遍历最东南角西北侧子区域
+{
+    if(!T)return;
+    else
+    {
+        if(T->isLeaf&&(T->southNode()->eastNode()==SE_estChunk))
+        {
+            task2out<<"#Lv."<<T->level<<" 区块：("<<T->x-2*T->quarterWidth()<<"<=x<="<<T->x+2*T->quarterWidth()<<"),\t ("<<T->y-2*T->quarterWidth()<<"<=y<="<<T->y+2*T->quarterWidth()<<")"<<endl;
+            // task1out<<"X:"<<T->prefix.first<<'\t'<<"Y:"<<T->prefix.second<<endl;
+            for(int i=0;i<T->includedStationNo.size();i++)
+            {
+                if(Stations[T->includedStationNo[i]].x!=0&&Stations[T->includedStationNo[i]].y!=0)
+                {
+                    task2out<<"\t基站#"<<Stations[T->includedStationNo[i]].no<<":"<<"\t"<<"坐标("<<Stations[T->includedStationNo[i]].x<<","<<Stations[T->includedStationNo[i]].y<<")"<<"\t"<<"类别:"<<Stations[T->includedStationNo[i]].typeName<<"\t"<<"相对强度:"<<setiosflags(ios::fixed)<<setprecision(4)<<Stations[T->includedStationNo[i]].baseStrength<<resetiosflags(ios::fixed)<<endl;
+                }
+            }
+            if(T->includedStationNo.size()==0)task2out<<"\t此区块由其父节点分裂产生，但是没有基站"<<endl;
+        }
+        for(int i=0;i<4;i++)
+        {
+            task2PreOrderTraverse_3(T->children[i]);
+        }
+    }
+    return;
+}
+
 void task2Process()
 {
     //最西北角的东侧
@@ -453,12 +479,13 @@ void task2Process()
     task2out<<"---"<<endl;
     task2out<<endl;
     //最东南角的西北侧
-    task2out<<"最东南角的西北侧:"<<endl;
-    // if(SE_estChunk->eastNode()->northNode())task1PreOrderTraverse_1(SE_estChunk->eastNode()->northNode());
+    task2out<<"最东南角的西北侧有以下树叶区块:"<<endl;
+    QuadTreeNode* SE_NW=SE_estChunk->westNode()->northNode();
+    if(SE_NW)task2PreOrderTraverse_3(SE_NW);
     task2out<<"---"<<endl;
     task2out<<endl;
     //最东南角西北侧的再北侧
-    task2out<<"最东南角西北侧的再北侧:"<<endl;
+    task2out<<"最东南角西北侧的再北侧有以下树叶区块:"<<endl;
     // if(SE_estChunk->eastNode()->northNode()->northNode())task1PreOrderTraverse_1(SE_estChunk->eastNode()->northNode()->northNode());
     task2out<<"---"<<endl;
     return;

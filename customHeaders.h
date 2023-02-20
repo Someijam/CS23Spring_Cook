@@ -82,3 +82,4 @@ void task1PreOrderTraverse_3(QuadTreeNode* T);//一直往东南找的最小区�
 void task2PreOrderTraverse_1(QuadTreeNode* T);//任务2:遍历区域1
 void task2PreOrderTraverse_2(QuadTreeNode* T);//任务2:遍历整个子区域2
 void task2Process();//任务2:遍历指定区块的相邻区块基站
+void task2PreOrderTraverse_3(QuadTreeNode* T);//任务2:遍历最东南角西北侧子区域
