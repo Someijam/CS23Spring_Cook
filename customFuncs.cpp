@@ -2,6 +2,10 @@
 
 using namespace std;
 
+//仅在此文件中使用的全局变量
+QuadTreeNode* tempNode;
+QuadTreeNode* tempThis;
+
 int QuadTreeNode::quarterWidth()//当前节点四分之一边长
 {
     return pow(2,BORDER_EXP-1-(this->level));
@@ -10,7 +14,7 @@ QuadTreeNode* QuadTreeNode::northNode()//北侧区块
 {
     int targetX=this->prefix.first;
     int targetY=this->prefix.second+1;
-    if(targetX>>this->level)return NULL;
+    if(targetY>>this->level)return NULL;
     //以上面两个数的二进制形式寻找
     QuadTreeNode* currentNode=&MapRoot;
     for(int i=this->level;i>=1;i--)//要求：同级，如果达不到同级深度，则尽可能深
@@ -28,7 +32,7 @@ QuadTreeNode* QuadTreeNode::southNode()//南侧区块
 {
     int targetX=this->prefix.first;
     int targetY=this->prefix.second-1;
-    if(targetX>>this->level)return NULL;
+    if(targetY<0)return NULL;
     //以上面两个数的二进制形式寻找
     QuadTreeNode* currentNode=&MapRoot;
     for(int i=this->level;i>=1;i--)//要求：同级，如果达不到同级深度，则尽可能深
@@ -64,7 +68,7 @@ QuadTreeNode* QuadTreeNode::westNode()//西侧区块
 {
     int targetX=this->prefix.first-1;
     int targetY=this->prefix.second;
-    if(targetX>>this->level)return NULL;
+    if(targetX<0)return NULL;
     //以上面两个数的二进制形式寻找
     QuadTreeNode* currentNode=&MapRoot;
     for(int i=this->level;i>=1;i--)//要求：同级，如果达不到同级深度，则尽可能深
@@ -77,6 +81,110 @@ QuadTreeNode* QuadTreeNode::westNode()//西侧区块
         else if(__builtin_popcount(targetX&(1<<(i-1)))==1&&__builtin_popcount(targetY&(1<<(i-1)))==0)currentNode=currentNode->children[3];
     }
     return currentNode;
+}
+QuadTreeNode* QuadTreeNode::nwNode()//西北区块
+{
+    tempNode=NULL;
+    tempThis=this;
+    if(this->westNode()==NULL||this->northNode()==NULL)return NULL;
+    if(this->westNode()->northNode()==this->northNode()->westNode())return this->westNode()->northNode();
+    QuadTreeNode* currentNode=this->westNode()->northNode();
+    quadtreeAssistTraverse1(currentNode);
+    return tempNode;
+}
+QuadTreeNode* QuadTreeNode::neNode()//东北区块
+{
+    tempNode=NULL;
+    tempThis=this;
+    if(this->eastNode()==NULL||this->northNode()==NULL)return NULL;
+    if(this->eastNode()->northNode()==this->northNode()->eastNode())return this->eastNode()->northNode();
+    QuadTreeNode* currentNode=this->eastNode()->northNode();
+    quadtreeAssistTraverse2(currentNode);
+    return tempNode;
+}
+QuadTreeNode* QuadTreeNode::swNode()//西南区块
+{
+    tempNode=NULL;
+    tempThis=this;
+    if(this->westNode()==NULL||this->southNode()==NULL)return NULL;
+    if(this->westNode()->southNode()==this->southNode()->westNode())return this->westNode()->southNode();
+    QuadTreeNode* currentNode=this->westNode()->southNode();
+    quadtreeAssistTraverse3(currentNode);
+    return tempNode;
+}
+QuadTreeNode* QuadTreeNode::seNode()//东南区块
+{
+    tempNode=NULL;
+    tempThis=this;
+    if(this->eastNode()==NULL||this->southNode()==NULL)return NULL;
+    if(this->eastNode()->southNode()==this->southNode()->eastNode())return this->eastNode()->southNode();
+    QuadTreeNode* currentNode=this->eastNode()->southNode();
+    quadtreeAssistTraverse4(currentNode);
+    return tempNode;
+}
+void quadtreeAssistTraverse1(QuadTreeNode* T)//辅助函数1
+{
+    if(!T)return;
+    else
+    {
+        if(T->isLeaf&&(T->southNode()->eastNode()==tempThis)&&(T->eastNode()->southNode()==tempThis))
+        {
+            tempNode=T;
+        }
+        for(int i=0;i<4;i++)
+        {
+            quadtreeAssistTraverse1(T->children[i]);
+        }
+    }
+    return;
+}
+void quadtreeAssistTraverse2(QuadTreeNode* T)//辅助函数2
+{
+    if(!T)return;
+    else
+    {
+        if(T->isLeaf&&(T->southNode()->westNode()==tempThis)&&(T->westNode()->southNode()==tempThis))
+        {
+            tempNode=T;
+        }
+        for(int i=0;i<4;i++)
+        {
+            quadtreeAssistTraverse2(T->children[i]);
+        }
+    }
+    return;
+}
+void quadtreeAssistTraverse3(QuadTreeNode* T)//辅助函数3
+{
+    if(!T)return;
+    else
+    {
+        if(T->isLeaf&&(T->northNode()->eastNode()==tempThis)&&(T->eastNode()->northNode()==tempThis))
+        {
+            tempNode=T;
+        }
+        for(int i=0;i<4;i++)
+        {
+            quadtreeAssistTraverse3(T->children[i]);
+        }
+    }
+    return;
+}
+void quadtreeAssistTraverse4(QuadTreeNode* T)//辅助函数4
+{
+    if(!T)return;
+    else
+    {
+        if(T->isLeaf&&(T->northNode()->westNode()==tempThis)&&(T->westNode()->northNode()==tempThis))
+        {
+            tempNode=T;
+        }
+        for(int i=0;i<4;i++)
+        {
+            quadtreeAssistTraverse4(T->children[i]);
+        }
+    }
+    return;
 }
 
 void setDateTime()//更新时间
@@ -546,19 +654,92 @@ double currentPointSignalStrength(Station st,int x,int y)//计算基站到当前
     return st.baseStrength*pow((R[st.type]/distanceFromSttoPoint(st,x,y)),2);
 }
 
-void task3Traverse(vector<int> &nearbyStationsIndex,int posx,int posy)//任务3:遍历寻找周围基站
+void task3Traverse(vector<int> &nearbyStationsIndex,int posx,int posy)//任务3:遍历寻找并收集周围基站,也适用于任务4
 {
     QuadTreeNode* T=positionInWhichChunk(posx,posy);
-    //城镇和乡镇只需找自己的区块
+    //城镇和乡镇只需找自己的区块以及临近的区块
     for(int i=0;i<T->includedStationIndex.size();i++)
     {
         if(distanceFromSttoPoint(Stations[T->includedStationIndex[i]],posx,posy)<=(300*sqrt(Stations[T->includedStationIndex[i]].baseStrength))&&Stations[T->includedStationIndex[i]].type==0)nearbyStationsIndex.push_back(T->includedStationIndex[i]);//城镇基站允许收录的条件
         if(distanceFromSttoPoint(Stations[T->includedStationIndex[i]],posx,posy)<=(1000*sqrt(Stations[T->includedStationIndex[i]].baseStrength))&&Stations[T->includedStationIndex[i]].type==1)nearbyStationsIndex.push_back(T->includedStationIndex[i]);//乡镇基站允许收录的条件
     }
+    QuadTreeNode* neighborTChunk=T->northNode();
+    if(neighborTChunk)
+    {
+        for(int i=0;i<neighborTChunk->includedStationIndex.size();i++)
+        {
+            if(distanceFromSttoPoint(Stations[neighborTChunk->includedStationIndex[i]],posx,posy)<=(300*sqrt(Stations[neighborTChunk->includedStationIndex[i]].baseStrength))&&Stations[neighborTChunk->includedStationIndex[i]].type==0)nearbyStationsIndex.push_back(neighborTChunk->includedStationIndex[i]);//城镇基站允许收录的条件
+            if(distanceFromSttoPoint(Stations[neighborTChunk->includedStationIndex[i]],posx,posy)<=(1000*sqrt(Stations[neighborTChunk->includedStationIndex[i]].baseStrength))&&Stations[neighborTChunk->includedStationIndex[i]].type==1)nearbyStationsIndex.push_back(neighborTChunk->includedStationIndex[i]);//乡镇基站允许收录的条件
+        }
+    }
+    neighborTChunk=T->southNode();
+    if(neighborTChunk)
+    {
+        for(int i=0;i<neighborTChunk->includedStationIndex.size();i++)
+        {
+            if(distanceFromSttoPoint(Stations[neighborTChunk->includedStationIndex[i]],posx,posy)<=(300*sqrt(Stations[neighborTChunk->includedStationIndex[i]].baseStrength))&&Stations[neighborTChunk->includedStationIndex[i]].type==0)nearbyStationsIndex.push_back(neighborTChunk->includedStationIndex[i]);//城镇基站允许收录的条件
+            if(distanceFromSttoPoint(Stations[neighborTChunk->includedStationIndex[i]],posx,posy)<=(1000*sqrt(Stations[neighborTChunk->includedStationIndex[i]].baseStrength))&&Stations[neighborTChunk->includedStationIndex[i]].type==1)nearbyStationsIndex.push_back(neighborTChunk->includedStationIndex[i]);//乡镇基站允许收录的条件
+        }
+    }
+    neighborTChunk=T->westNode();
+    if(neighborTChunk)
+    {
+        for(int i=0;i<neighborTChunk->includedStationIndex.size();i++)
+        {
+            if(distanceFromSttoPoint(Stations[neighborTChunk->includedStationIndex[i]],posx,posy)<=(300*sqrt(Stations[neighborTChunk->includedStationIndex[i]].baseStrength))&&Stations[neighborTChunk->includedStationIndex[i]].type==0)nearbyStationsIndex.push_back(neighborTChunk->includedStationIndex[i]);//城镇基站允许收录的条件
+            if(distanceFromSttoPoint(Stations[neighborTChunk->includedStationIndex[i]],posx,posy)<=(1000*sqrt(Stations[neighborTChunk->includedStationIndex[i]].baseStrength))&&Stations[neighborTChunk->includedStationIndex[i]].type==1)nearbyStationsIndex.push_back(neighborTChunk->includedStationIndex[i]);//乡镇基站允许收录的条件
+        }
+    }
+    neighborTChunk=T->eastNode();
+    if(neighborTChunk)
+    {
+        for(int i=0;i<neighborTChunk->includedStationIndex.size();i++)
+        {
+            if(distanceFromSttoPoint(Stations[neighborTChunk->includedStationIndex[i]],posx,posy)<=(300*sqrt(Stations[neighborTChunk->includedStationIndex[i]].baseStrength))&&Stations[neighborTChunk->includedStationIndex[i]].type==0)nearbyStationsIndex.push_back(neighborTChunk->includedStationIndex[i]);//城镇基站允许收录的条件
+            if(distanceFromSttoPoint(Stations[neighborTChunk->includedStationIndex[i]],posx,posy)<=(1000*sqrt(Stations[neighborTChunk->includedStationIndex[i]].baseStrength))&&Stations[neighborTChunk->includedStationIndex[i]].type==1)nearbyStationsIndex.push_back(neighborTChunk->includedStationIndex[i]);//乡镇基站允许收录的条件
+        }
+    }
+    neighborTChunk=T->nwNode();
+    if(neighborTChunk)
+    {
+        for(int i=0;i<neighborTChunk->includedStationIndex.size();i++)
+        {
+            if(distanceFromSttoPoint(Stations[neighborTChunk->includedStationIndex[i]],posx,posy)<=(300*sqrt(Stations[neighborTChunk->includedStationIndex[i]].baseStrength))&&Stations[neighborTChunk->includedStationIndex[i]].type==0)nearbyStationsIndex.push_back(neighborTChunk->includedStationIndex[i]);//城镇基站允许收录的条件
+            if(distanceFromSttoPoint(Stations[neighborTChunk->includedStationIndex[i]],posx,posy)<=(1000*sqrt(Stations[neighborTChunk->includedStationIndex[i]].baseStrength))&&Stations[neighborTChunk->includedStationIndex[i]].type==1)nearbyStationsIndex.push_back(neighborTChunk->includedStationIndex[i]);//乡镇基站允许收录的条件
+        }
+    }
+    neighborTChunk=T->neNode();
+    if(neighborTChunk)
+    {
+        for(int i=0;i<neighborTChunk->includedStationIndex.size();i++)
+        {
+            if(distanceFromSttoPoint(Stations[neighborTChunk->includedStationIndex[i]],posx,posy)<=(300*sqrt(Stations[neighborTChunk->includedStationIndex[i]].baseStrength))&&Stations[neighborTChunk->includedStationIndex[i]].type==0)nearbyStationsIndex.push_back(neighborTChunk->includedStationIndex[i]);//城镇基站允许收录的条件
+            if(distanceFromSttoPoint(Stations[neighborTChunk->includedStationIndex[i]],posx,posy)<=(1000*sqrt(Stations[neighborTChunk->includedStationIndex[i]].baseStrength))&&Stations[neighborTChunk->includedStationIndex[i]].type==1)nearbyStationsIndex.push_back(neighborTChunk->includedStationIndex[i]);//乡镇基站允许收录的条件
+        }
+    }
+    neighborTChunk=T->swNode();
+    if(neighborTChunk)
+    {
+        for(int i=0;i<neighborTChunk->includedStationIndex.size();i++)
+        {
+            if(distanceFromSttoPoint(Stations[neighborTChunk->includedStationIndex[i]],posx,posy)<=(300*sqrt(Stations[neighborTChunk->includedStationIndex[i]].baseStrength))&&Stations[neighborTChunk->includedStationIndex[i]].type==0)nearbyStationsIndex.push_back(neighborTChunk->includedStationIndex[i]);//城镇基站允许收录的条件
+            if(distanceFromSttoPoint(Stations[neighborTChunk->includedStationIndex[i]],posx,posy)<=(1000*sqrt(Stations[neighborTChunk->includedStationIndex[i]].baseStrength))&&Stations[neighborTChunk->includedStationIndex[i]].type==1)nearbyStationsIndex.push_back(neighborTChunk->includedStationIndex[i]);//乡镇基站允许收录的条件
+        }
+    }
+    neighborTChunk=T->seNode();
+    if(neighborTChunk)
+    {
+        for(int i=0;i<neighborTChunk->includedStationIndex.size();i++)
+        {
+            if(distanceFromSttoPoint(Stations[neighborTChunk->includedStationIndex[i]],posx,posy)<=(300*sqrt(Stations[neighborTChunk->includedStationIndex[i]].baseStrength))&&Stations[neighborTChunk->includedStationIndex[i]].type==0)nearbyStationsIndex.push_back(neighborTChunk->includedStationIndex[i]);//城镇基站允许收录的条件
+            if(distanceFromSttoPoint(Stations[neighborTChunk->includedStationIndex[i]],posx,posy)<=(1000*sqrt(Stations[neighborTChunk->includedStationIndex[i]].baseStrength))&&Stations[neighborTChunk->includedStationIndex[i]].type==1)nearbyStationsIndex.push_back(neighborTChunk->includedStationIndex[i]);//乡镇基站允许收录的条件
+        }
+    }
     //高速基站单独比较
     for(int i=0;i<ExpressWayStationsNo.size();i++)
     {
-        if(distanceFromSttoPoint(Stations[ExpressWayStationsNo[i]],posx,posy)<=5000*sqrt(Stations[ExpressWayStationsNo[i]].baseStrength))nearbyStationsIndex.push_back(ExpressWayStationsNo[i]);//高速基站收录条件
+        if(distanceFromSttoPoint(Stations[ExpressWayStationsNo[i]],posx,posy)<=5000*sqrt(Stations[ExpressWayStationsNo[i]].baseStrength))
+            nearbyStationsIndex.push_back(ExpressWayStationsNo[i]);//高速基站收录条件
     }
     return;
 }
@@ -567,9 +748,11 @@ void task3Process()//任务3:给定3个坐标，找到要求的基站
 {
     for(int i=0;i<3;i++)
     {
+        task3out<<"[ANS-Main/3-"<<i+1<<"]";
+        task3out<<"位置坐标("<<testx3[i]<<","<<testy3[i]<<")附近";
         vector<int> nearbyStationsIndex;
         //分3种条件，遍历3次，保证找到所有类型的基站，存放到nearByStationsIndex容器中
-        //城镇、乡镇：当前区块即可(区块最深8级，宽1024)，高速单独比较
+        //城镇、乡镇：当前区块和周围区块即可(区块最深8级，宽1024)，高速单独比较
         task3Traverse(nearbyStationsIndex,testx3[i],testy3[i]);
         //在上面的容器中找到信号最强的那一个序号
         if(nearbyStationsIndex.size()==0)
@@ -582,9 +765,36 @@ void task3Process()//任务3:给定3个坐标，找到要求的基站
         {
             if(currentPointSignalStrength(Stations[strongestStationIndex],testx3[i],testy3[i])<currentPointSignalStrength(Stations[nearbyStationsIndex[j]],testx3[i],testy3[i]))strongestStationIndex=nearbyStationsIndex[i];
         }
-        task3out<<"位置坐标("<<testx3[i]<<","<<testy3[i]<<")附近的最优信号基站为:编号#"<<Stations[strongestStationIndex].no<<"\t基站位置:("<<Stations[strongestStationIndex].x<<","<<Stations[strongestStationIndex].y<<")"<<"\t类型:"<<Stations[strongestStationIndex].typeName<<"\t相对强度:"<<currentPointSignalStrength(Stations[strongestStationIndex],testx3[i],testy3[i])<<endl;
+        task3out<<"的最优信号基站为:\t编号#"<<Stations[strongestStationIndex].no<<"\t基站位置:("<<Stations[strongestStationIndex].x<<","<<Stations[strongestStationIndex].y<<")"<<"\t类型:"<<Stations[strongestStationIndex].typeName<<"\t距离:"<<distanceFromSttoPoint(Stations[strongestStationIndex],testx3[i],testy3[i])<<"\t相对强度:"<<currentPointSignalStrength(Stations[strongestStationIndex],testx3[i],testy3[i])<<endl;
     }
     task3out<<"完成"<<endl;
+    return;
+}
+
+void task4Process()//任务4:类似任务3
+{
+    for(int i=0;i<3;i++)
+    {
+        task4out<<"[ANS-Main/4-"<<i+1<<"]";
+        task4out<<"位置坐标("<<testx4[i]<<","<<testy4[i]<<")附近";
+        vector<int> nearbyStationsIndex;
+        //分3种条件，遍历3次，保证找到所有类型的基站，存放到nearByStationsIndex容器中
+        //城镇、乡镇：当前区块和周围区块即可(区块最深8级，宽1024)，高速单独比较
+        task3Traverse(nearbyStationsIndex,testx4[i],testy4[i]);//这里也适用任务3的函数
+        //在上面的容器中找到信号最强的那一个序号
+        if(nearbyStationsIndex.size()==0)
+        {
+            task4out<<"没有符合要求的基站"<<endl;
+            continue;
+        }//没有符合要求的基站
+        int strongestStationIndex=nearbyStationsIndex[0];
+        for(int j=0;j<nearbyStationsIndex.size();j++)
+        {
+            if(currentPointSignalStrength(Stations[strongestStationIndex],testx4[i],testy4[i])<currentPointSignalStrength(Stations[nearbyStationsIndex[j]],testx4[i],testy4[i]))strongestStationIndex=nearbyStationsIndex[i];
+        }
+        task4out<<"的最优信号基站为:\t编号#"<<Stations[strongestStationIndex].no<<"\t基站位置:("<<Stations[strongestStationIndex].x<<","<<Stations[strongestStationIndex].y<<")"<<"\t类型:"<<Stations[strongestStationIndex].typeName<<"\t距离:"<<distanceFromSttoPoint(Stations[strongestStationIndex],testx4[i],testy4[i])<<"\t相对强度:"<<currentPointSignalStrength(Stations[strongestStationIndex],testx4[i],testy4[i])<<endl;
+    }
+    task4out<<"完成"<<endl;
     return;
 }
 

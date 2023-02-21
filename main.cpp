@@ -22,8 +22,10 @@ bool task1_3Finished=false;
 QuadTreeNode* NW_estChunk;//最西北角区块地址
 QuadTreeNode* SE_estChunk;//最东南角区块地址
 QuadTreeNode* SE_nwChunk;//东南角区块的西北小区块地址
-int testx3[3]={101000,18291,26354};
+int testx3[3]={101000,18291,85000};
 int testy3[3]={23500,26354,28000};//任务3数据
+int testx4[3]={3000,70000,100000};
+int testy4[3]={36900,35000,7002};//任务4数据
 
 FILE* fJZin;
 
@@ -52,6 +54,7 @@ int main()
     task1out.open("./outputs/task1.out",ios::out);
     task2out.open("./outputs/task2.out",ios::out);
     task3out.open("./outputs/task3.out",ios::out);
+    task4out.open("./outputs/task4.out",ios::out);
     //打开用于输出答案的文件
     logout.open(cmdLogPath.c_str(),ios::out);//日志文件
 
@@ -99,6 +102,14 @@ int main()
     setDateTime();//更新日志文件里的时间
     logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"Task3已完成。"<<endl;
     /*****************任务3结束*****************/
+
+    /******************任务4******************/
+    setDateTime();//更新日志文件里的时间
+    logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"即将执行Task4，请前往\"outputs/task4.out\"下查看输出结果。"<<endl;
+    task4Process();
+    setDateTime();//更新日志文件里的时间
+    logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"Task4已完成。"<<endl;
+    /*****************任务4结束*****************/
 
 
 
