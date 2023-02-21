@@ -101,3 +101,4 @@ void task2PreOrderTraverse_3(QuadTreeNode* T);//任务2:遍历最东南角西北
 void task2PreOrderTraverse_4(QuadTreeNode* T);//任务2:遍历最东南角西北侧再北侧的子区域
 void task3Process();//任务3:给定3个坐标，找到要求的基站
 void task4Process();//任务4:类似任务3
+int bestMatchStation(int x,int y);//工具函数，给定x,y返回最优基站在Stations中的索引

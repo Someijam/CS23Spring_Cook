@@ -111,7 +111,7 @@ int main()
     logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"Task4已完成。"<<endl;
     /*****************任务4结束*****************/
 
-
+    // cout<<Stations[bestMatchStation(11451,14514)].no<<endl;//示例
 
     /******************收尾工作******************/
     deleteMap(&MapRoot);//释放四叉树占用的空间

@@ -87,7 +87,7 @@ QuadTreeNode* QuadTreeNode::nwNode()//西北区块
     tempNode=NULL;
     tempThis=this;
     if(this->westNode()==NULL||this->northNode()==NULL)return NULL;
-    if(this->westNode()->northNode()==this->northNode()->westNode())return this->westNode()->northNode();
+    // if(this->westNode()->northNode()==this->northNode()->westNode())return this->westNode()->northNode();
     QuadTreeNode* currentNode=this->westNode()->northNode();
     quadtreeAssistTraverse1(currentNode);
     return tempNode;
@@ -97,7 +97,7 @@ QuadTreeNode* QuadTreeNode::neNode()//东北区块
     tempNode=NULL;
     tempThis=this;
     if(this->eastNode()==NULL||this->northNode()==NULL)return NULL;
-    if(this->eastNode()->northNode()==this->northNode()->eastNode())return this->eastNode()->northNode();
+    // if(this->eastNode()->northNode()==this->northNode()->eastNode())return this->eastNode()->northNode();
     QuadTreeNode* currentNode=this->eastNode()->northNode();
     quadtreeAssistTraverse2(currentNode);
     return tempNode;
@@ -107,7 +107,7 @@ QuadTreeNode* QuadTreeNode::swNode()//西南区块
     tempNode=NULL;
     tempThis=this;
     if(this->westNode()==NULL||this->southNode()==NULL)return NULL;
-    if(this->westNode()->southNode()==this->southNode()->westNode())return this->westNode()->southNode();
+    // if(this->westNode()->southNode()==this->southNode()->westNode())return this->westNode()->southNode();
     QuadTreeNode* currentNode=this->westNode()->southNode();
     quadtreeAssistTraverse3(currentNode);
     return tempNode;
@@ -117,7 +117,7 @@ QuadTreeNode* QuadTreeNode::seNode()//东南区块
     tempNode=NULL;
     tempThis=this;
     if(this->eastNode()==NULL||this->southNode()==NULL)return NULL;
-    if(this->eastNode()->southNode()==this->southNode()->eastNode())return this->eastNode()->southNode();
+    // if(this->eastNode()->southNode()==this->southNode()->eastNode())return this->eastNode()->southNode();
     QuadTreeNode* currentNode=this->eastNode()->southNode();
     quadtreeAssistTraverse4(currentNode);
     return tempNode;
@@ -654,7 +654,7 @@ double currentPointSignalStrength(Station st,int x,int y)//计算基站到当前
     return st.baseStrength*pow((R[st.type]/distanceFromSttoPoint(st,x,y)),2);
 }
 
-void task3Traverse(vector<int> &nearbyStationsIndex,int posx,int posy)//任务3:遍历寻找并收集周围基站,也适用于任务4
+void stationsNearBy(vector<int> &nearbyStationsIndex,int posx,int posy)//工具函数，给定点坐标，收集附近的基站到容器中。任务3:遍历寻找并收集周围基站,也适用于任务4
 {
     QuadTreeNode* T=positionInWhichChunk(posx,posy);
     //城镇和乡镇只需找自己的区块以及临近的区块
@@ -753,7 +753,7 @@ void task3Process()//任务3:给定3个坐标，找到要求的基站
         vector<int> nearbyStationsIndex;
         //分3种条件，遍历3次，保证找到所有类型的基站，存放到nearByStationsIndex容器中
         //城镇、乡镇：当前区块和周围区块即可(区块最深8级，宽1024)，高速单独比较
-        task3Traverse(nearbyStationsIndex,testx3[i],testy3[i]);
+        stationsNearBy(nearbyStationsIndex,testx3[i],testy3[i]);
         //在上面的容器中找到信号最强的那一个序号
         if(nearbyStationsIndex.size()==0)
         {
@@ -766,6 +766,12 @@ void task3Process()//任务3:给定3个坐标，找到要求的基站
             if(currentPointSignalStrength(Stations[strongestStationIndex],testx3[i],testy3[i])<currentPointSignalStrength(Stations[nearbyStationsIndex[j]],testx3[i],testy3[i]))strongestStationIndex=nearbyStationsIndex[i];
         }
         task3out<<"的最优信号基站为:\t编号#"<<Stations[strongestStationIndex].no<<"\t基站位置:("<<Stations[strongestStationIndex].x<<","<<Stations[strongestStationIndex].y<<")"<<"\t类型:"<<Stations[strongestStationIndex].typeName<<"\t距离:"<<distanceFromSttoPoint(Stations[strongestStationIndex],testx3[i],testy3[i])<<"\t相对强度:"<<currentPointSignalStrength(Stations[strongestStationIndex],testx3[i],testy3[i])<<endl;
+        task3out<<"附近所有的基站:";
+        for(int j=0;j<nearbyStationsIndex.size();j++)
+        {
+            task3out<<Stations[nearbyStationsIndex[j]].no<<" ";
+        }
+        task3out<<endl;
     }
     task3out<<"完成"<<endl;
     return;
@@ -780,7 +786,7 @@ void task4Process()//任务4:类似任务3
         vector<int> nearbyStationsIndex;
         //分3种条件，遍历3次，保证找到所有类型的基站，存放到nearByStationsIndex容器中
         //城镇、乡镇：当前区块和周围区块即可(区块最深8级，宽1024)，高速单独比较
-        task3Traverse(nearbyStationsIndex,testx4[i],testy4[i]);//这里也适用任务3的函数
+        stationsNearBy(nearbyStationsIndex,testx4[i],testy4[i]);//这里也适用任务3的函数
         //在上面的容器中找到信号最强的那一个序号
         if(nearbyStationsIndex.size()==0)
         {
@@ -793,8 +799,27 @@ void task4Process()//任务4:类似任务3
             if(currentPointSignalStrength(Stations[strongestStationIndex],testx4[i],testy4[i])<currentPointSignalStrength(Stations[nearbyStationsIndex[j]],testx4[i],testy4[i]))strongestStationIndex=nearbyStationsIndex[i];
         }
         task4out<<"的最优信号基站为:\t编号#"<<Stations[strongestStationIndex].no<<"\t基站位置:("<<Stations[strongestStationIndex].x<<","<<Stations[strongestStationIndex].y<<")"<<"\t类型:"<<Stations[strongestStationIndex].typeName<<"\t距离:"<<distanceFromSttoPoint(Stations[strongestStationIndex],testx4[i],testy4[i])<<"\t相对强度:"<<currentPointSignalStrength(Stations[strongestStationIndex],testx4[i],testy4[i])<<endl;
+        task4out<<"附近所有的基站:";
+        for(int j=0;j<nearbyStationsIndex.size();j++)
+        {
+            task4out<<Stations[nearbyStationsIndex[j]].no<<" ";
+        }
+        task4out<<endl;
     }
     task4out<<"完成"<<endl;
     return;
 }
 
+int bestMatchStation(int x,int y)//工具函数，给定x,y返回最优基站在Stations中的索引
+{
+    vector<int> nearbyStationsIndex;
+    stationsNearBy(nearbyStationsIndex,x,y);
+    int index=0;
+    if(nearbyStationsIndex.size()==0)return 0;//附近没有基站，返回0
+    int strongestStationIndex=nearbyStationsIndex[0];
+    for(int i=0;i<nearbyStationsIndex.size();i++)
+    {
+        if(currentPointSignalStrength(Stations[strongestStationIndex],x,y)<currentPointSignalStrength(Stations[nearbyStationsIndex[i]],x,y))strongestStationIndex=nearbyStationsIndex[i];
+    }
+    return strongestStationIndex;
+}
