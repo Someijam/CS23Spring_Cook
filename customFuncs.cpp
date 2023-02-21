@@ -6,7 +6,6 @@ int QuadTreeNode::quarterWidth()//当前节点四分之一边长
 {
     return pow(2,BORDER_EXP-1-(this->level));
 }
-
 QuadTreeNode* QuadTreeNode::northNode()//北侧区块
 {
     int targetX=this->prefix.first;
@@ -130,6 +129,7 @@ void readJzFile()//将基站文件读入内存
                 logout<<"["<<fTime<<"]"<<"[Main/ERR]"<<"基站文件中基站类型不与城区乡镇和高速的任意一种匹配，请检查如下基站:编号#"<<tempSt.no<<endl;
             }
             Stations.push_back(tempSt);
+            if(tempSt.type==2)ExpressWayStationsNo.push_back(tempSt.no);
         }
         if(tempSt.x!=-1||tempSt.y!=-1)
         {
@@ -254,34 +254,34 @@ void diverseTree(QuadTreeNode* leaf)//将此树叶分为四个子节点
     return;
 }
 
-void addStationToTree(Station st)//将基站st添加到四叉树
+void addStationToTree(int index)//将索引为index基站添加到四叉树
 {
     QuadTreeNode* insertTarget=&MapRoot;
     while(!insertTarget->isLeaf)
     {
-        insertTarget=insertTarget->children[defineWhichQuadrant(&st,insertTarget)];
+        insertTarget=insertTarget->children[defineWhichQuadrant(&Stations[index],insertTarget)];
     }
     //将insertTargrt定位到需要插入的位置
-    if((insertTarget->includedStationNo.size()<MAX_UNIT_NUNS)&&(insertTarget->includedStationNo.size()>=0))
+    if((insertTarget->includedStationIndex.size()<MAX_UNIT_NUNS)&&(insertTarget->includedStationIndex.size()>=0))
     {
-        insertTarget->includedStationNo.push_back(st.no);
+        insertTarget->includedStationIndex.push_back(index);
     }//叶节点没有满则继续插入
-    else if(insertTarget->includedStationNo.size()==MAX_UNIT_NUNS)
+    else if(insertTarget->includedStationIndex.size()==MAX_UNIT_NUNS)
     {
         diverseTree(insertTarget);
-        for(int i=0;i<insertTarget->includedStationNo.size();i++)
+        for(int i=0;i<insertTarget->includedStationIndex.size();i++)
         {
-            insertTarget->children[defineWhichQuadrant(&Stations[insertTarget->includedStationNo[i]],insertTarget)]->includedStationNo.push_back(insertTarget->includedStationNo[i]);
-            //将 当前节点基站序号存储容器的第i个人 添加到 当前节点的 第（第i个基站相对于当前节点的）象限的子节点 的基站序号存储容器
+            insertTarget->children[defineWhichQuadrant(&Stations[insertTarget->includedStationIndex[i]],insertTarget)]->includedStationIndex.push_back(insertTarget->includedStationIndex[i]);
+            //将 当前节点基站索引存储容器的第i个人 添加到 当前节点的 第（第i个基站相对于当前节点的）象限的子节点 的基站索引存储容器
         }//转移当前的9个站点序号到下面四个节点
-        insertTarget->includedStationNo.clear();
-        // insertTarget->children[defineWhichQuadrant(&st,insertTarget)]->includedStationNo.push_back(st.no);//转移完毕，有很大概率上面的9个还是会挤到一起，所以得递归调用
-        addStationToTree(st);//递归调用，上面节点挤到一起了还得再分
+        insertTarget->includedStationIndex.clear();
+        // insertTarget->children[defineWhichQuadrant(&st,insertTarget)]->includedStationIndex.push_back(st.no);//转移完毕，有很大概率上面的9个还是会挤到一起，所以得递归调用
+        addStationToTree(index);//递归调用，上面节点挤到一起了还得再分
     }//叶节点满了就转移到子节点稍后再插入
     else
     {
         setDateTime();//更新日志文件里的时间
-        logout<<"["<<fTime<<"]"<<"[STAD/ERR]此种情况绝对不会出现，除非是见鬼了：insertTarget->includedStationNo.size()="<<insertTarget->includedStationNo.size()<<endl;
+        logout<<"["<<fTime<<"]"<<"[STAD/ERR]此种情况绝对不会出现，除非是见鬼了：insertTarget->includedStationIndex.size()="<<insertTarget->includedStationIndex.size()<<endl;
         exit(0);
     }
 
@@ -300,6 +300,7 @@ void deleteMap(QuadTreeNode* head)//释放四叉树空间
     {
         setDateTime();//更新日志文件里的时间
         // logout<<"["<<fTime<<"]"<<"[Main/INFO]Deleted a stem in level#"<<head->level<<endl;
+        // if(head->level>maxLevel)maxLevel=head->level;
         delete head;//MapRoot不是动态分配，不显式删除
         head=NULL;
     }
@@ -327,18 +328,18 @@ void task1PreOrderTraverse_2(QuadTreeNode* T)//一直往西北找的最小区域
         {
             if(!task1_2Finished)
             {
-                for(int i=0;i<T->includedStationNo.size();i++)
+                for(int i=0;i<T->includedStationIndex.size();i++)
                 {
-                    if(T->includedStationNo.size()>0&&i==0)
+                    if(T->includedStationIndex.size()>0&&i==0)
                     {
                         NW_estChunk=T;//记录最西北的区块的地址供后续任务使用
                         task1out<<"#Lv."<<T->level<<" 区块：("<<T->x-2*T->quarterWidth()<<"<=x<="<<T->x+2*T->quarterWidth()<<"),\t ("<<T->y-2*T->quarterWidth()<<"<=y<="<<T->y+2*T->quarterWidth()<<")"<<endl;
                         task1out<<"X:"<<T->prefix.first<<'\t'<<"Y:"<<T->prefix.second<<endl;
                         // task1out<<"#1/4Width="<<T->quarterWidth()<<" Center("<<T->x<<","<<T->y<<")"<<endl;
                     }
-                    if(Stations[T->includedStationNo[i]].x!=0&&Stations[T->includedStationNo[i]].y!=0)
+                    if(Stations[T->includedStationIndex[i]].x!=0&&Stations[T->includedStationIndex[i]].y!=0)
                     {
-                        task1out<<"\t基站#"<<Stations[T->includedStationNo[i]].no<<":"<<"\t"<<"坐标("<<Stations[T->includedStationNo[i]].x<<","<<Stations[T->includedStationNo[i]].y<<")"<<"\t"<<"类别:"<<Stations[T->includedStationNo[i]].typeName<<"\t"<<"相对强度:"<<setiosflags(ios::fixed)<<setprecision(4)<<Stations[T->includedStationNo[i]].baseStrength<<resetiosflags(ios::fixed)<<endl;
+                        task1out<<"\t基站#"<<Stations[T->includedStationIndex[i]].no<<":"<<"\t"<<"坐标("<<Stations[T->includedStationIndex[i]].x<<","<<Stations[T->includedStationIndex[i]].y<<")"<<"\t"<<"类别:"<<Stations[T->includedStationIndex[i]].typeName<<"\t"<<"相对强度:"<<setiosflags(ios::fixed)<<setprecision(4)<<Stations[T->includedStationIndex[i]].baseStrength<<resetiosflags(ios::fixed)<<endl;
                         task1_2Finished=true;
                     }
                 }
@@ -361,18 +362,18 @@ void task1PreOrderTraverse_3(QuadTreeNode* T)//一直往东南找的最小区域
         {
             if(!task1_3Finished)
             {
-                for(int i=0;i<T->includedStationNo.size();i++)
+                for(int i=0;i<T->includedStationIndex.size();i++)
                 {
-                    if(T->includedStationNo.size()>0&&i==0)
+                    if(T->includedStationIndex.size()>0&&i==0)
                     {
                         SE_estChunk=T;//记录最东南区块的地址
                         task1out<<"#Lv."<<T->level<<" 区块：("<<T->x-2*T->quarterWidth()<<"<=x<="<<T->x+2*T->quarterWidth()<<"),\t ("<<T->y-2*T->quarterWidth()<<"<=y<="<<T->y+2*T->quarterWidth()<<")"<<endl;
                         task1out<<"X:"<<T->prefix.first<<'\t'<<"Y:"<<T->prefix.second<<endl;
                         // task1out<<"#1/4Width="<<T->quarterWidth()<<" Center("<<T->x<<","<<T->y<<")"<<endl;
                     }
-                    if(Stations[T->includedStationNo[i]].x!=0&&Stations[T->includedStationNo[i]].y!=0)
+                    if(Stations[T->includedStationIndex[i]].x!=0&&Stations[T->includedStationIndex[i]].y!=0)
                     {
-                        task1out<<"\t基站#"<<Stations[T->includedStationNo[i]].no<<":"<<"\t"<<"坐标("<<Stations[T->includedStationNo[i]].x<<","<<Stations[T->includedStationNo[i]].y<<")"<<"\t"<<"类别:"<<Stations[T->includedStationNo[i]].typeName<<"\t"<<"相对强度:"<<setiosflags(ios::fixed)<<setprecision(4)<<Stations[T->includedStationNo[i]].baseStrength<<resetiosflags(ios::fixed)<<endl;
+                        task1out<<"\t基站#"<<Stations[T->includedStationIndex[i]].no<<":"<<"\t"<<"坐标("<<Stations[T->includedStationIndex[i]].x<<","<<Stations[T->includedStationIndex[i]].y<<")"<<"\t"<<"类别:"<<Stations[T->includedStationIndex[i]].typeName<<"\t"<<"相对强度:"<<setiosflags(ios::fixed)<<setprecision(4)<<Stations[T->includedStationIndex[i]].baseStrength<<resetiosflags(ios::fixed)<<endl;
                         task1_3Finished=true;
                     }
                 }
@@ -395,14 +396,14 @@ void task2PreOrderTraverse_1(QuadTreeNode* T)//任务2:遍历最西北角东侧�
         {
             task2out<<"#Lv."<<T->level<<" 区块：("<<T->x-2*T->quarterWidth()<<"<=x<="<<T->x+2*T->quarterWidth()<<"),\t ("<<T->y-2*T->quarterWidth()<<"<=y<="<<T->y+2*T->quarterWidth()<<")"<<endl;
             // task2out<<"X:"<<T->prefix.first<<'\t'<<"Y:"<<T->prefix.second<<endl;
-            for(int i=0;i<T->includedStationNo.size();i++)
+            for(int i=0;i<T->includedStationIndex.size();i++)
             {
-                if(Stations[T->includedStationNo[i]].x!=0&&Stations[T->includedStationNo[i]].y!=0)
+                if(Stations[T->includedStationIndex[i]].x!=0&&Stations[T->includedStationIndex[i]].y!=0)
                 {
-                    task2out<<"\t基站#"<<Stations[T->includedStationNo[i]].no<<":"<<"\t"<<"坐标("<<Stations[T->includedStationNo[i]].x<<","<<Stations[T->includedStationNo[i]].y<<")"<<"\t"<<"类别:"<<Stations[T->includedStationNo[i]].typeName<<"\t"<<"相对强度:"<<setiosflags(ios::fixed)<<setprecision(4)<<Stations[T->includedStationNo[i]].baseStrength<<resetiosflags(ios::fixed)<<endl;
+                    task2out<<"\t基站#"<<Stations[T->includedStationIndex[i]].no<<":"<<"\t"<<"坐标("<<Stations[T->includedStationIndex[i]].x<<","<<Stations[T->includedStationIndex[i]].y<<")"<<"\t"<<"类别:"<<Stations[T->includedStationIndex[i]].typeName<<"\t"<<"相对强度:"<<setiosflags(ios::fixed)<<setprecision(4)<<Stations[T->includedStationIndex[i]].baseStrength<<resetiosflags(ios::fixed)<<endl;
                 }
             }
-            if(T->includedStationNo.size()==0)task2out<<"\t此区块由其父节点分裂产生，但是没有基站"<<endl;
+            if(T->includedStationIndex.size()==0)task2out<<"\t此区块由其父节点分裂产生，但是没有基站"<<endl;
         }
         for(int i=0;i<4;i++)
         {
@@ -421,14 +422,14 @@ void task2PreOrderTraverse_2(QuadTreeNode* T)//任务2:遍历最西北角南侧�
         {
             task2out<<"#Lv."<<T->level<<" 区块：("<<T->x-2*T->quarterWidth()<<"<=x<="<<T->x+2*T->quarterWidth()<<"),\t ("<<T->y-2*T->quarterWidth()<<"<=y<="<<T->y+2*T->quarterWidth()<<")"<<endl;
             // task1out<<"X:"<<T->prefix.first<<'\t'<<"Y:"<<T->prefix.second<<endl;
-            for(int i=0;i<T->includedStationNo.size();i++)
+            for(int i=0;i<T->includedStationIndex.size();i++)
             {
-                if(Stations[T->includedStationNo[i]].x!=0&&Stations[T->includedStationNo[i]].y!=0)
+                if(Stations[T->includedStationIndex[i]].x!=0&&Stations[T->includedStationIndex[i]].y!=0)
                 {
-                    task2out<<"\t基站#"<<Stations[T->includedStationNo[i]].no<<":"<<"\t"<<"坐标("<<Stations[T->includedStationNo[i]].x<<","<<Stations[T->includedStationNo[i]].y<<")"<<"\t"<<"类别:"<<Stations[T->includedStationNo[i]].typeName<<"\t"<<"相对强度:"<<setiosflags(ios::fixed)<<setprecision(4)<<Stations[T->includedStationNo[i]].baseStrength<<resetiosflags(ios::fixed)<<endl;
+                    task2out<<"\t基站#"<<Stations[T->includedStationIndex[i]].no<<":"<<"\t"<<"坐标("<<Stations[T->includedStationIndex[i]].x<<","<<Stations[T->includedStationIndex[i]].y<<")"<<"\t"<<"类别:"<<Stations[T->includedStationIndex[i]].typeName<<"\t"<<"相对强度:"<<setiosflags(ios::fixed)<<setprecision(4)<<Stations[T->includedStationIndex[i]].baseStrength<<resetiosflags(ios::fixed)<<endl;
                 }
             }
-            if(T->includedStationNo.size()==0)task2out<<"\t此区块由其父节点分裂产生，但是没有基站"<<endl;
+            if(T->includedStationIndex.size()==0)task2out<<"\t此区块由其父节点分裂产生，但是没有基站"<<endl;
         }
         for(int i=0;i<4;i++)
         {
@@ -448,14 +449,14 @@ void task2PreOrderTraverse_3(QuadTreeNode* T)//任务2:遍历最东南角西北�
             SE_nwChunk=T;
             task2out<<"#Lv."<<T->level<<" 区块：("<<T->x-2*T->quarterWidth()<<"<=x<="<<T->x+2*T->quarterWidth()<<"),\t ("<<T->y-2*T->quarterWidth()<<"<=y<="<<T->y+2*T->quarterWidth()<<")"<<endl;
             // task1out<<"X:"<<T->prefix.first<<'\t'<<"Y:"<<T->prefix.second<<endl;
-            for(int i=0;i<T->includedStationNo.size();i++)
+            for(int i=0;i<T->includedStationIndex.size();i++)
             {
-                if(Stations[T->includedStationNo[i]].x!=0&&Stations[T->includedStationNo[i]].y!=0)
+                if(Stations[T->includedStationIndex[i]].x!=0&&Stations[T->includedStationIndex[i]].y!=0)
                 {
-                    task2out<<"\t基站#"<<Stations[T->includedStationNo[i]].no<<":"<<"\t"<<"坐标("<<Stations[T->includedStationNo[i]].x<<","<<Stations[T->includedStationNo[i]].y<<")"<<"\t"<<"类别:"<<Stations[T->includedStationNo[i]].typeName<<"\t"<<"相对强度:"<<setiosflags(ios::fixed)<<setprecision(4)<<Stations[T->includedStationNo[i]].baseStrength<<resetiosflags(ios::fixed)<<endl;
+                    task2out<<"\t基站#"<<Stations[T->includedStationIndex[i]].no<<":"<<"\t"<<"坐标("<<Stations[T->includedStationIndex[i]].x<<","<<Stations[T->includedStationIndex[i]].y<<")"<<"\t"<<"类别:"<<Stations[T->includedStationIndex[i]].typeName<<"\t"<<"相对强度:"<<setiosflags(ios::fixed)<<setprecision(4)<<Stations[T->includedStationIndex[i]].baseStrength<<resetiosflags(ios::fixed)<<endl;
                 }
             }
-            if(T->includedStationNo.size()==0)task2out<<"\t此区块由其父节点分裂产生，但是没有基站"<<endl;
+            if(T->includedStationIndex.size()==0)task2out<<"\t此区块由其父节点分裂产生，但是没有基站"<<endl;
         }
         for(int i=0;i<4;i++)
         {
@@ -474,14 +475,14 @@ void task2PreOrderTraverse_4(QuadTreeNode* T)//任务2:遍历最东南角西北�
         {
             task2out<<"#Lv."<<T->level<<" 区块：("<<T->x-2*T->quarterWidth()<<"<=x<="<<T->x+2*T->quarterWidth()<<"),\t ("<<T->y-2*T->quarterWidth()<<"<=y<="<<T->y+2*T->quarterWidth()<<")"<<endl;
             // task1out<<"X:"<<T->prefix.first<<'\t'<<"Y:"<<T->prefix.second<<endl;
-            for(int i=0;i<T->includedStationNo.size();i++)
+            for(int i=0;i<T->includedStationIndex.size();i++)
             {
-                if(Stations[T->includedStationNo[i]].x!=0&&Stations[T->includedStationNo[i]].y!=0)
+                if(Stations[T->includedStationIndex[i]].x!=0&&Stations[T->includedStationIndex[i]].y!=0)
                 {
-                    task2out<<"\t基站#"<<Stations[T->includedStationNo[i]].no<<":"<<"\t"<<"坐标("<<Stations[T->includedStationNo[i]].x<<","<<Stations[T->includedStationNo[i]].y<<")"<<"\t"<<"类别:"<<Stations[T->includedStationNo[i]].typeName<<"\t"<<"相对强度:"<<setiosflags(ios::fixed)<<setprecision(4)<<Stations[T->includedStationNo[i]].baseStrength<<resetiosflags(ios::fixed)<<endl;
+                    task2out<<"\t基站#"<<Stations[T->includedStationIndex[i]].no<<":"<<"\t"<<"坐标("<<Stations[T->includedStationIndex[i]].x<<","<<Stations[T->includedStationIndex[i]].y<<")"<<"\t"<<"类别:"<<Stations[T->includedStationIndex[i]].typeName<<"\t"<<"相对强度:"<<setiosflags(ios::fixed)<<setprecision(4)<<Stations[T->includedStationIndex[i]].baseStrength<<resetiosflags(ios::fixed)<<endl;
                 }
             }
-            if(T->includedStationNo.size()==0)task2out<<"\t此区块由其父节点分裂产生，但是没有基站"<<endl;
+            if(T->includedStationIndex.size()==0)task2out<<"\t此区块由其父节点分裂产生，但是没有基站"<<endl;
         }
         for(int i=0;i<4;i++)
         {
@@ -516,6 +517,74 @@ void task2Process()//任务2:主体调用
     QuadTreeNode* SE_NW_N=SE_nwChunk->northNode();
     if(SE_NW_N)task2PreOrderTraverse_4(SE_NW_N);
     task2out<<"完成"<<endl;
+    return;
+}
+
+QuadTreeNode* positionInWhichChunk(int x,int y)//当前坐标的点在哪一个最小区块内
+{
+    QuadTreeNode* currentChunk=&MapRoot;
+    while (!currentChunk->isLeaf)
+    {
+        int quadrant=-1;
+        if((x-currentChunk->x>0)&&(y-currentChunk->y>=0))quadrant=0;
+        else if((x-currentChunk->x<=0)&&(y-currentChunk->y>0))quadrant=1;
+        else if((x-currentChunk->x<0)&&(y-currentChunk->y<=0))quadrant=2;
+        else if((x-currentChunk->x>=0)&&(y-currentChunk->y<0))quadrant=3;
+        currentChunk=currentChunk->children[quadrant];
+    }
+    return currentChunk;
+}
+
+double distanceFromSttoPoint(Station st,int posx,int posy)//计算基站到考察点的距离
+{
+    return sqrt(pow(posx-st.x,2)+pow(posy-st.y,2));
+}
+
+double currentPointSignalStrength(Station st,int x,int y)//计算基站到当前点的相对强度
+{
+    int R[3]={300,1000,5000};
+    return st.baseStrength*pow((R[st.type]/distanceFromSttoPoint(st,x,y)),2);
+}
+
+void task3Traverse(vector<int> &nearbyStationsIndex,int posx,int posy)//任务3:遍历寻找周围基站
+{
+    QuadTreeNode* T=positionInWhichChunk(posx,posy);
+    //城镇和乡镇只需找自己的区块
+    for(int i=0;i<T->includedStationIndex.size();i++)
+    {
+        if(distanceFromSttoPoint(Stations[T->includedStationIndex[i]],posx,posy)<=(300*sqrt(Stations[T->includedStationIndex[i]].baseStrength))&&Stations[T->includedStationIndex[i]].type==0)nearbyStationsIndex.push_back(T->includedStationIndex[i]);//城镇基站允许收录的条件
+        if(distanceFromSttoPoint(Stations[T->includedStationIndex[i]],posx,posy)<=(1000*sqrt(Stations[T->includedStationIndex[i]].baseStrength))&&Stations[T->includedStationIndex[i]].type==1)nearbyStationsIndex.push_back(T->includedStationIndex[i]);//乡镇基站允许收录的条件
+    }
+    //高速基站单独比较
+    for(int i=0;i<ExpressWayStationsNo.size();i++)
+    {
+        if(distanceFromSttoPoint(Stations[ExpressWayStationsNo[i]],posx,posy)<=5000*sqrt(Stations[ExpressWayStationsNo[i]].baseStrength))nearbyStationsIndex.push_back(ExpressWayStationsNo[i]);//高速基站收录条件
+    }
+    return;
+}
+
+void task3Process()//任务3:给定3个坐标，找到要求的基站
+{
+    for(int i=0;i<3;i++)
+    {
+        vector<int> nearbyStationsIndex;
+        //分3种条件，遍历3次，保证找到所有类型的基站，存放到nearByStationsIndex容器中
+        //城镇、乡镇：当前区块即可(区块最深8级，宽1024)，高速单独比较
+        task3Traverse(nearbyStationsIndex,testx3[i],testy3[i]);
+        //在上面的容器中找到信号最强的那一个序号
+        if(nearbyStationsIndex.size()==0)
+        {
+            task3out<<"没有符合要求的基站"<<endl;
+            continue;
+        }//没有符合要求的基站
+        int strongestStationIndex=nearbyStationsIndex[0];
+        for(int j=0;j<nearbyStationsIndex.size();j++)
+        {
+            if(currentPointSignalStrength(Stations[strongestStationIndex],testx3[i],testy3[i])<currentPointSignalStrength(Stations[nearbyStationsIndex[j]],testx3[i],testy3[i]))strongestStationIndex=nearbyStationsIndex[i];
+        }
+        task3out<<"位置坐标("<<testx3[i]<<","<<testy3[i]<<")附近的最优信号基站为:编号#"<<Stations[strongestStationIndex].no<<"\t基站位置:("<<Stations[strongestStationIndex].x<<","<<Stations[strongestStationIndex].y<<")"<<"\t类型:"<<Stations[strongestStationIndex].typeName<<"\t相对强度:"<<currentPointSignalStrength(Stations[strongestStationIndex],testx3[i],testy3[i])<<endl;
+    }
+    task3out<<"完成"<<endl;
     return;
 }
 
