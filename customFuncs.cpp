@@ -183,6 +183,16 @@ void quadtreeAssistTraverse4(QuadTreeNode* T)//辅助函数4
     return;
 }
 
+bool isInVector(vector<int> &vec,int a)//待改进为模版函数，查找元素a是否在vec中
+{
+    vector<int>::iterator i;
+    for(i=vec.begin();i!=vec.end();++i)//这里要改成++i
+    {
+        if(*i.base()==a)return true;
+    }
+    return false;
+}
+
 void setDateTime()//更新时间
 {
     now = time(0);
@@ -853,7 +863,7 @@ int bestMatchStation(int x,int y)//工具函数，给定x,y返回最优基站在
     return strongestStationIndex;
 }
 
-void getCurrentPosition(int currentTime,int routeNo,double &x,double &y)//给时间和路径序号，获得终端当前坐标
+void getCurrentPosition(double currentTime,int routeNo,double &x,double &y)//给时间和路径序号，获得终端当前坐标
 {
     double cosTheta=(terminalMovement[routeNo].xe-terminalMovement[routeNo].xs)/sqrt(pow(terminalMovement[routeNo].xe-terminalMovement[routeNo].xs,2)+pow(terminalMovement[routeNo].ye-terminalMovement[routeNo].ys,2));
     double sinTheta=(terminalMovement[routeNo].ye-terminalMovement[routeNo].ys)/sqrt(pow(terminalMovement[routeNo].xe-terminalMovement[routeNo].xs,2)+pow(terminalMovement[routeNo].ye-terminalMovement[routeNo].ys,2));
@@ -865,7 +875,10 @@ void getCurrentPosition(int currentTime,int routeNo,double &x,double &y)//给时
 
 void task5Process()//任务5过程
 {
-    
+    vector<int> passedStationsIndexType0;
+    vector<int> passedStationsIndexType1;
+    vector<int> passedStationsIndexType2;
+    int lastConnectedStationIndex=-1;//刚才连上的基站编号
     for(int i=1;i<terminalMovement.size();i++)//第i段移动轨迹
     {
         task5out<<"终端正在第"<<i<<"段路径上移动:"<<endl;
@@ -874,21 +887,58 @@ void task5Process()//任务5过程
         else endTime=terminalMovement[i+1].startTime;//结束时间为下一段路径的开始时间，最后一次是19:00(1140)
         double presentX=terminalMovement[i].xs;
         double presentY=terminalMovement[i].ys;//设置好起始坐标
-        int lastConnectedStationIndex=-1;//刚才连上的基站编号
-        for(int globalMapTime=terminalMovement[i].startTime;globalMapTime<=endTime;globalMapTime++)//分度值为1min
+        
+        for(double globalMapTime=terminalMovement[i].startTime;globalMapTime<=endTime;globalMapTime+=(1.0/60))//分度值为0.1min(6s)
         {
             getCurrentPosition(globalMapTime,i,presentX,presentY);//当前时间的坐标已经存入presentX presentY
             int shouldConnectStationIndex=bestMatchStation(presentX,presentY);
             if(shouldConnectStationIndex==lastConnectedStationIndex)continue;//相同，不用切换
-            if(shouldConnectStationIndex==0)task5out<<"\t["<<globalMapTime/60<<":"<<globalMapTime%60<<"] 无信号"<<endl;
+            //以下为输出
+            task5out<<"\t["<<int(globalMapTime/60)<<":";
+            if(int(globalMapTime)%60<10)task5out<<"0";
+            task5out<<int(globalMapTime)%60<<":";
+            double sec=60*(globalMapTime-int(globalMapTime));
+            if(int(sec)<10)task5out<<"0";
+            task5out<<int(sec)<<"] ";
+            if(shouldConnectStationIndex==0)
+            {
+                task5out<<"无信号"<<endl;
+            }
             else 
             {
-                task5out<<"\t["<<globalMapTime/60<<":";
-                if(globalMapTime%60<10)task5out<<"0";
-                task5out<<globalMapTime%60<<"] 切换到基站#"<<Stations[shouldConnectStationIndex].no<<"\t类型:"<<Stations[shouldConnectStationIndex].typeName<<endl;
+                if(Stations[shouldConnectStationIndex].type==0&&(!isInVector(passedStationsIndexType0,shouldConnectStationIndex)))passedStationsIndexType0.push_back(shouldConnectStationIndex);
+                else if(Stations[shouldConnectStationIndex].type==1&&(!isInVector(passedStationsIndexType1,shouldConnectStationIndex)))passedStationsIndexType1.push_back(shouldConnectStationIndex);
+                else if(Stations[shouldConnectStationIndex].type==2&&(!isInVector(passedStationsIndexType2,shouldConnectStationIndex)))passedStationsIndexType2.push_back(shouldConnectStationIndex);
+                task5out<<"切换到基站#"<<Stations[shouldConnectStationIndex].no<<"\t类型:"<<Stations[shouldConnectStationIndex].typeName<<endl;
             }
             lastConnectedStationIndex=shouldConnectStationIndex;
         }
     }
+    task5out<<"---"<<endl;
+    task5out<<"经过以下"<<passedStationsIndexType0.size()<<"个城区基站:"<<endl;
+    for(int i=0;i<passedStationsIndexType0.size();i++)
+    {
+        if(i%10==0)task5out<<"\t";
+        task5out<<Stations[passedStationsIndexType0[i]].no<<"  \t";
+        if(i%10==9)task5out<<endl;
+    }
+    task5out<<endl;
+    task5out<<"经过以下"<<passedStationsIndexType1.size()<<"个乡镇基站:"<<endl;
+    for(int i=0;i<passedStationsIndexType1.size();i++)
+    {
+        if(i%10==0)task5out<<"\t";
+        task5out<<Stations[passedStationsIndexType1[i]].no<<"  \t";
+        if(i%10==9)task5out<<endl;
+    }
+    task5out<<endl;
+    task5out<<"经过以下"<<passedStationsIndexType2.size()<<"个高速基站:"<<endl;
+    task5out<<"\t";
+    for(int i=0;i<passedStationsIndexType2.size();i++)
+    {
+        task5out<<Stations[passedStationsIndexType2[i]].no<<" ";
+    }
+    task5out<<endl;
+    task5out<<"完成"<<endl;
     return;
 }
+
