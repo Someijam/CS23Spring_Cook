@@ -22,16 +22,21 @@ bool task1_3Finished=false;
 QuadTreeNode* NW_estChunk;//最西北角区块地址
 QuadTreeNode* SE_estChunk;//最东南角区块地址
 QuadTreeNode* SE_nwChunk;//东南角区块的西北小区块地址
+QuadTreeNode* tempNode;
+QuadTreeNode* tempThis;
 int testx3[3]={101000,18291,85000};
 int testy3[3]={23500,26354,28000};//任务3数据
 int testx4[3]={3000,70000,100000};
 int testy4[3]={36900,35000,7002};//任务4数据
+vector<Route> terminalMovement;//终端运动轨迹
 
 FILE* fJZin;
+FILE* fRTin;
 
 ifstream jzin;
 ifstream wzin;
-ifstream ydin;
+ifstream ydin;//这三项可能没用
+
 ofstream logout;
 ofstream task1out;
 ofstream task2out;
@@ -49,12 +54,13 @@ int main()
     cmdLogPath=cmdLogPath+".log";
 
     // jzin.open("./test_data/jz001.txt",ios::in);//基站输入
-    wzin.open("./test_data/wz001.txt",ios::in);//伪基站输入
-    ydin.open("./test_data/yd001.txt",ios::in);//移动轨迹输入
+    // wzin.open("./test_data/wz001.txt",ios::in);//伪基站输入
+    // ydin.open("./test_data/yd001.txt",ios::in);//移动轨迹输入
     task1out.open("./outputs/task1.out",ios::out);
     task2out.open("./outputs/task2.out",ios::out);
     task3out.open("./outputs/task3.out",ios::out);
     task4out.open("./outputs/task4.out",ios::out);
+    task5out.open("./outputs/task5.out",ios::out);
     //打开用于输出答案的文件
     logout.open(cmdLogPath.c_str(),ios::out);//日志文件
 
@@ -68,6 +74,10 @@ int main()
 
     readJzFile();
     //线性存储各个基站数据到内存，免得频繁磁盘IO
+    readTermMoveFile();
+    //线性读取终端移动路径到内存
+    logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"Successfully added terminal routes to the memory."<<endl;
+
     int stCnt=0;
     for(int i=1;i<Stations.size();i++)//基站信息添加到四叉树
     {
@@ -111,7 +121,15 @@ int main()
     logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"Task4已完成。"<<endl;
     /*****************任务4结束*****************/
 
-    // cout<<Stations[bestMatchStation(11451,14514)].no<<endl;//示例
+    /******************任务5******************/
+    setDateTime();//更新日志文件里的时间
+    logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"即将执行Task5，请前往\"outputs/task5.out\"下查看输出结果。"<<endl;
+    task5Process();
+    setDateTime();//更新日志文件里的时间
+    logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"Task5已完成。"<<endl;
+    /*****************任务5结束*****************/
+
+
 
     /******************收尾工作******************/
     deleteMap(&MapRoot);//释放四叉树占用的空间

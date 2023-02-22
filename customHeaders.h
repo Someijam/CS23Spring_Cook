@@ -47,6 +47,16 @@ struct Station//基站信息
     double baseStrength;//强度
     int no;//顺序编号
 };
+struct Route//移动路径
+{
+    double xs;
+    double ys;//起点
+    double xe;
+    double ye;//终点
+    double velocity;//速度
+    int startTime;//离散时间=hour*60+min
+};
+
 
 //全局变量
 extern vector<Station> Stations;
@@ -63,12 +73,16 @@ extern bool task1_3Finished;
 extern QuadTreeNode* NW_estChunk;//最西北角区块地址
 extern QuadTreeNode* SE_estChunk;//最东南角区块地址
 extern QuadTreeNode* SE_nwChunk;//东南角区块的西北小区块地址
+extern QuadTreeNode* tempNode;
+extern QuadTreeNode* tempThis;
 extern int testx3[3];
 extern int testy3[3];//任务3数据
 extern int testx4[3];
 extern int testy4[3];//任务4数据
+extern vector<Route> terminalMovement;//终端运动轨迹
 
 extern FILE* fJZin;
+extern FILE* fRTin;
 
 extern ifstream jzin;
 extern ifstream wzin;
@@ -87,6 +101,7 @@ void quadtreeAssistTraverse3(QuadTreeNode* T);//辅助函数3
 void quadtreeAssistTraverse4(QuadTreeNode* T);//辅助函数4
 void setDateTime();//更新日期和时间
 void readJzFile();//将基站文件读入内存
+void readTermMoveFile();//将终端路线读入内存
 int defineWhichQuadrant(Station* st,QuadTreeNode* tree);//查找这个基站相对于当前中心的象限
 void diverseTree(QuadTreeNode* leaf);//将此树叶分为四个子节点
 void addStationToTree(int i);//将索引为i的基站添加到四叉树
@@ -102,3 +117,5 @@ void task2PreOrderTraverse_4(QuadTreeNode* T);//任务2:遍历最东南角西北
 void task3Process();//任务3:给定3个坐标，找到要求的基站
 void task4Process();//任务4:类似任务3
 int bestMatchStation(int x,int y);//工具函数，给定x,y返回最优基站在Stations中的索引
+void getCurrentPosition(int currentTime,int routeNo,double &x,double &y);//给时间和路径序号，获得终端当前坐标
+void task5Process();//任务5过程

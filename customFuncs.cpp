@@ -2,10 +2,6 @@
 
 using namespace std;
 
-//仅在此文件中使用的全局变量
-QuadTreeNode* tempNode;
-QuadTreeNode* tempThis;
-
 int QuadTreeNode::quarterWidth()//当前节点四分之一边长
 {
     return pow(2,BORDER_EXP-1-(this->level));
@@ -299,6 +295,39 @@ void readJzFile()//将基站文件读入内存
         exit(0);
     }
     fclose(fJZin);
+    return;
+}
+
+void readTermMoveFile()//将终端路线读入内存
+{
+    Route tempSegment={0};
+    terminalMovement.push_back(tempSegment);
+    string rtFile="./test_data/yd001.txt";
+    fRTin=freopen(rtFile.c_str(),"r",stdin);
+    if(!fRTin)
+    {
+        cerr<<"基站移动路径文件不存在"<<endl;
+        exit(0);
+    }
+    char inputType[5]={0};
+    cin>>inputType;
+    if(strcmp(inputType,"YD")==0)
+    {
+        int hr=0;
+        int min=0;
+        while(scanf("%lf,%lf,%lf,%lf,%lf,%d,%d",&tempSegment.xs,&tempSegment.ys,&tempSegment.xe,&tempSegment.ye,&tempSegment.velocity,&hr,&min)==7)//正常输入为7个参数
+        {
+            tempSegment.startTime=60*hr+min;
+            terminalMovement.push_back(tempSegment);
+        }
+    }
+    else
+    {
+        setDateTime();//更新日志文件里的时间
+        logout<<"["<<fTime<<"]"<<"[Main/ERR]"<<"移动路径文件头部有误"<<endl;
+        exit(0);
+    }
+    fclose(fRTin);
     return;
 }
 
@@ -822,4 +851,44 @@ int bestMatchStation(int x,int y)//工具函数，给定x,y返回最优基站在
         if(currentPointSignalStrength(Stations[strongestStationIndex],x,y)<currentPointSignalStrength(Stations[nearbyStationsIndex[i]],x,y))strongestStationIndex=nearbyStationsIndex[i];
     }
     return strongestStationIndex;
+}
+
+void getCurrentPosition(int currentTime,int routeNo,double &x,double &y)//给时间和路径序号，获得终端当前坐标
+{
+    double cosTheta=(terminalMovement[routeNo].xe-terminalMovement[routeNo].xs)/sqrt(pow(terminalMovement[routeNo].xe-terminalMovement[routeNo].xs,2)+pow(terminalMovement[routeNo].ye-terminalMovement[routeNo].ys,2));
+    double sinTheta=(terminalMovement[routeNo].ye-terminalMovement[routeNo].ys)/sqrt(pow(terminalMovement[routeNo].xe-terminalMovement[routeNo].xs,2)+pow(terminalMovement[routeNo].ye-terminalMovement[routeNo].ys,2));
+    double r=(50*terminalMovement[routeNo].velocity*(currentTime-terminalMovement[routeNo].startTime))/3.0;
+    x=terminalMovement[routeNo].xs+r*cosTheta;
+    y=terminalMovement[routeNo].ys+r*sinTheta;
+    return;
+}
+
+void task5Process()//任务5过程
+{
+    
+    for(int i=1;i<terminalMovement.size();i++)//第i段移动轨迹
+    {
+        task5out<<"终端正在第"<<i<<"段路径上移动:"<<endl;
+        int endTime;
+        if(i==terminalMovement.size()-1)endTime=1140;
+        else endTime=terminalMovement[i+1].startTime;//结束时间为下一段路径的开始时间，最后一次是19:00(1140)
+        double presentX=terminalMovement[i].xs;
+        double presentY=terminalMovement[i].ys;//设置好起始坐标
+        int lastConnectedStationIndex=-1;//刚才连上的基站编号
+        for(int globalMapTime=terminalMovement[i].startTime;globalMapTime<=endTime;globalMapTime++)//分度值为1min
+        {
+            getCurrentPosition(globalMapTime,i,presentX,presentY);//当前时间的坐标已经存入presentX presentY
+            int shouldConnectStationIndex=bestMatchStation(presentX,presentY);
+            if(shouldConnectStationIndex==lastConnectedStationIndex)continue;//相同，不用切换
+            if(shouldConnectStationIndex==0)task5out<<"\t["<<globalMapTime/60<<":"<<globalMapTime%60<<"] 无信号"<<endl;
+            else 
+            {
+                task5out<<"\t["<<globalMapTime/60<<":";
+                if(globalMapTime%60<10)task5out<<"0";
+                task5out<<globalMapTime%60<<"] 切换到基站#"<<Stations[shouldConnectStationIndex].no<<"\t类型:"<<Stations[shouldConnectStationIndex].typeName<<endl;
+            }
+            lastConnectedStationIndex=shouldConnectStationIndex;
+        }
+    }
+    return;
 }
