@@ -33,10 +33,6 @@ vector<Route> terminalMovement;//终端运动轨迹
 FILE* fJZin;
 FILE* fRTin;
 
-ifstream jzin;
-ifstream wzin;
-ifstream ydin;//这三项可能没用
-
 ofstream logout;
 ofstream task1out;
 ofstream task2out;
@@ -53,9 +49,6 @@ int main()
     cmdLogPath=cmdLogPath+fTime;
     cmdLogPath=cmdLogPath+".log";
 
-    // jzin.open("./test_data/jz001.txt",ios::in);//基站输入
-    // wzin.open("./test_data/wz001.txt",ios::in);//伪基站输入
-    // ydin.open("./test_data/yd001.txt",ios::in);//移动轨迹输入
     task1out.open("./outputs/task1.out",ios::out);
     task2out.open("./outputs/task2.out",ios::out);
     task3out.open("./outputs/task3.out",ios::out);
@@ -92,7 +85,7 @@ int main()
     /******************任务1******************/
     setDateTime();//更新日志文件里的时间
     logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"即将执行Task1，请前往\"outputs/task1.out\"下查看输出结果。"<<endl;
-    task1Traverse();
+    task1Process();
     setDateTime();//更新日志文件里的时间
     logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"Task1已完成。"<<endl;
     /*****************任务1结束*****************/

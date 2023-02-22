@@ -7,11 +7,12 @@
 #include<cstdio>
 #include<cstdlib>
 #include<vector>
-// #include<bitset>
 #include<ctime>
+
 //宏定义
 #define BORDER_EXP 17//地图尺寸指数
 #define MAX_UNIT_NUNS (int)9//单分块最大基站数
+
 //名字空间
 using namespace std;
 
@@ -22,7 +23,6 @@ struct QuadTreeNode//四叉树结构
     int x;
     int y; // 节点的坐标(中心位置)
     int level; // 节点的级别(整张图最中间为0级，逐级增加)
-    //quarterWidth=pow(2,17-level)
     QuadTreeNode* children[4];//={NULL}; // 子节点，最多有4个
     QuadTreeNode* parent;//上级节点
     bool isLeaf; // 是否为叶节点
@@ -84,9 +84,6 @@ extern vector<Route> terminalMovement;//终端运动轨迹
 extern FILE* fJZin;
 extern FILE* fRTin;
 
-extern ifstream jzin;
-extern ifstream wzin;
-extern ifstream ydin;
 extern ofstream logout;
 extern ofstream task1out;
 extern ofstream task2out;
@@ -95,27 +92,29 @@ extern ofstream task4out;
 extern ofstream task5out;
 
 //函数声明
+//结构体定义中需要使用的方法函数(需声明)
 void quadtreeAssistTraverse1(QuadTreeNode* T);//辅助函数1
 void quadtreeAssistTraverse2(QuadTreeNode* T);//辅助函数2
 void quadtreeAssistTraverse3(QuadTreeNode* T);//辅助函数3
 void quadtreeAssistTraverse4(QuadTreeNode* T);//辅助函数4
-void setDateTime();//更新日期和时间
+
+//C++通用工具函数(需声明)
+bool isInVector(vector<int> &vec,int a);//待改进为模版函数，查找元素a是否在vec中
+
+//与main过程有关的函数(需声明)
+void setDateTime();//更新时间
 void readJzFile();//将基站文件读入内存
 void readTermMoveFile();//将终端路线读入内存
+
+//和四叉树结构有关的函数(需声明)
 int defineWhichQuadrant(Station* st,QuadTreeNode* tree);//查找这个基站相对于当前中心的象限
 void diverseTree(QuadTreeNode* leaf);//将此树叶分为四个子节点
-void addStationToTree(int i);//将索引为i的基站添加到四叉树
+void addStationToTree(int index);//将索引为index基站添加到四叉树
 void deleteMap(QuadTreeNode* head);//释放四叉树空间
-void task1Traverse();//任务1:遍历西北角和东南角的基站
-void task1PreOrderTraverse_2(QuadTreeNode* T);//一直往西北找的最小区域，备用
-void task1PreOrderTraverse_3(QuadTreeNode* T);//一直往东南找的最小区域，备用
-void task2PreOrderTraverse_1(QuadTreeNode* T);//任务2:遍历区域1
-void task2PreOrderTraverse_2(QuadTreeNode* T);//任务2:遍历整个子区域2
-void task2Process();//任务2:遍历指定区块的相邻区块基站
-void task2PreOrderTraverse_3(QuadTreeNode* T);//任务2:遍历最东南角西北侧子区域
-void task2PreOrderTraverse_4(QuadTreeNode* T);//任务2:遍历最东南角西北侧再北侧的子区域
+
+//任务过程函数(需声明)
+void task1Process();//任务1:遍历西北角和东南角的基站
+void task2Process();//任务2:主体调用
 void task3Process();//任务3:给定3个坐标，找到要求的基站
 void task4Process();//任务4:类似任务3
-int bestMatchStation(int x,int y);//工具函数，给定x,y返回最优基站在Stations中的索引
-void getCurrentPosition(int currentTime,int routeNo,double &x,double &y);//给时间和路径序号，获得终端当前坐标
 void task5Process();//任务5过程
