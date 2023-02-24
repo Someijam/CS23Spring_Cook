@@ -1,0 +1,15 @@
+终端正在第1段路径上移动:
+对连接上第一个基站的时间二分求精确值
+	leftTime=11:00:03.000  	rightTime=11:00:04.000	Delta_t=1s.
+	leftTime=11:00:03.000  	rightTime=11:00:03.500	Delta_t=0.5s.
+	leftTime=11:00:03.250  	rightTime=11:00:03.500	Delta_t=0.25s.
+	leftTime=11:00:03.250  	rightTime=11:00:03.375	Delta_t=0.125s.
+[ANS-Ext/1-1]Precise Time=11:00:03.312	Delta_t=(+/-)0.031s.
+
+对离开第一个基站有效范围的时间二分求精确值
+	leftTime=11:00:53.000  	rightTime=11:00:54.000	Delta_t=1s.
+	leftTime=11:00:53.500  	rightTime=11:00:54.000	Delta_t=0.5s.
+	leftTime=11:00:53.750  	rightTime=11:00:54.000	Delta_t=0.25s.
+	leftTime=11:00:53.875  	rightTime=11:00:54.000	Delta_t=0.125s.
+[ANS-Ext/1-2]Precise Time=11:00:53.937	Delta_t=(+/-)0.031s.
+完成

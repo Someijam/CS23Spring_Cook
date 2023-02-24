@@ -579,7 +579,7 @@ int bestMatchStation(int x,int y)//工具函数，给定x,y返回最优基站在
     }
     return strongestStationIndex;
 }
-void getCurrentPosition(double currentTime,int routeNo,double &x,double &y)//给时间和路径序号，获得终端当前坐标
+void getCurrentPosition(long double currentTime,int routeNo,double &x,double &y)//给时间和路径序号，获得终端当前坐标
 {
     double cosTheta=(terminalMovement[routeNo].xe-terminalMovement[routeNo].xs)/sqrt(pow(terminalMovement[routeNo].xe-terminalMovement[routeNo].xs,2)+pow(terminalMovement[routeNo].ye-terminalMovement[routeNo].ys,2));
     double sinTheta=(terminalMovement[routeNo].ye-terminalMovement[routeNo].ys)/sqrt(pow(terminalMovement[routeNo].xe-terminalMovement[routeNo].xs,2)+pow(terminalMovement[routeNo].ye-terminalMovement[routeNo].ys,2));
@@ -588,7 +588,20 @@ void getCurrentPosition(double currentTime,int routeNo,double &x,double &y)//给
     y=terminalMovement[routeNo].ys+r*sinTheta;
     return;
 }
-
+void printDoubleMinToTime(long double time,ofstream &fout)//给出离散时间和流，输出格式时间
+{
+    int hr=int(time/60);
+    int min=int(time)%60;
+    long double sec=60*(time-int(time));
+    if(hr<10)fout<<"0";
+    fout<<hr<<":";
+    if(min<10)fout<<"0";
+    fout<<min<<":";
+    if(sec<10)fout<<"0";
+    fout<<setiosflags(ios::fixed)<<setprecision(3)<<sec;//<<resetiosflags(ios::fixed);
+    // fout<<sec;
+    return;
+}
 //任务辅助函数
 void task1PreOrderTraverse_2(QuadTreeNode* T)//任务1:一直往西北找的最小区域，1023遍历
 {
@@ -863,6 +876,7 @@ void task4Process()//任务4:类似任务3
 }
 void task5Process()//任务5过程
 {
+    task5out<<"[ANS-Main/5]"<<endl;
     vector<int> passedStationsIndexType0;
     vector<int> passedStationsIndexType1;
     vector<int> passedStationsIndexType2;
@@ -876,7 +890,7 @@ void task5Process()//任务5过程
         double presentX=terminalMovement[i].xs;
         double presentY=terminalMovement[i].ys;//设置好起始坐标
         
-        for(double globalMapTime=terminalMovement[i].startTime;globalMapTime<=endTime;globalMapTime+=(1.0/60))//分度值为0.1min(6s)
+        for(double globalMapTime=terminalMovement[i].startTime;globalMapTime<=endTime;globalMapTime+=(1.0/60))//分度值为1/60min(1s)
         {
             getCurrentPosition(globalMapTime,i,presentX,presentY);//当前时间的坐标已经存入presentX presentY
             int shouldConnectStationIndex=bestMatchStation(presentX,presentY);
@@ -887,7 +901,7 @@ void task5Process()//任务5过程
             task5out<<int(globalMapTime)%60<<":";
             double sec=60*(globalMapTime-int(globalMapTime));
             if(int(sec)<10)task5out<<"0";
-            task5out<<int(sec)<<"] ";
+            task5out<<sec<<"] ";
             if(shouldConnectStationIndex==0)
             {
                 task5out<<"无信号"<<endl;
@@ -929,4 +943,83 @@ void task5Process()//任务5过程
     task5out<<"完成"<<endl;
     return;
 }
+void ext1Process()//扩展1过程
+{
+    int validConnections=0;
+    ext1out<<"终端正在第1段路径上移动:"<<endl;
+    int endTime=11*60+30;//第一段路径时长30min
+    double presentX=terminalMovement[1].xs;
+    double presentY=terminalMovement[1].ys;//设置好起始坐标
+    long double leftEntryTime=0;
+    long double rightEntryTime=0;
+    long double leftExitTime=0;
+    long double rightExitTime=0;//二分法的四个时间
+    for(long double globalMapTime=terminalMovement[1].startTime;globalMapTime<=endTime;globalMapTime+=(1.0/60))//分度值为1/60min(1s)
+    {
+        getCurrentPosition(globalMapTime,1,presentX,presentY);//当前时间的坐标已经存入presentX presentY
+        int shouldConnectStationIndex=bestMatchStation(presentX,presentY);
+        if(validConnections==0&&shouldConnectStationIndex!=0)//条件：第一次进入有信号区域
+        {
+            rightEntryTime=globalMapTime;
+            leftEntryTime=globalMapTime-(1.0/60);//记录进入瞬间的两个时间边界
+            validConnections=1;
+        }
+        if(validConnections==1&&shouldConnectStationIndex==0)//条件：第一次离开有信号区域
+        {
+            rightExitTime=globalMapTime;
+            leftExitTime=globalMapTime-(1.0/60);//记录离开瞬间的两个时间边界
+            validConnections=0;
+            break;
+        }
+    }
 
+    long double midEntryTime=0;
+    ext1out<<"对连接上第一个基站的时间二分求精确值"<<endl;
+    while(rightEntryTime-leftEntryTime>=1.0/600)//进入阶段二分
+    {
+        ext1out<<"\tleftTime=";
+        printDoubleMinToTime(leftEntryTime,ext1out);
+        ext1out<<resetiosflags(ios::fixed);
+        ext1out<<"  \trightTime=";
+        printDoubleMinToTime(rightEntryTime,ext1out);
+        ext1out<<resetiosflags(ios::fixed);
+        ext1out<<"\tDelta_t="<<60*(rightEntryTime-leftEntryTime)<<"s."<<endl;
+        double x=0;
+        double y=0;
+        midEntryTime=(rightEntryTime+leftEntryTime)/2.0;
+        getCurrentPosition(midEntryTime,1,x,y);
+        int matchNo=bestMatchStation(x,y);
+        if(matchNo!=0)rightEntryTime=midEntryTime;//连上了
+        else if(matchNo==0)leftEntryTime=midEntryTime;//没连上
+    }
+    ext1out<<"[ANS-Ext/1-1]Precise Time=";
+    printDoubleMinToTime(midEntryTime,ext1out);
+    ext1out<<"\tDelta_t=(+/-)"<<30*(rightEntryTime-leftEntryTime)<<"s."<<endl;
+
+    ext1out<<endl;
+
+    long double midExitTime=0;
+    ext1out<<"对离开第一个基站有效范围的时间二分求精确值"<<endl;
+    while(rightExitTime-leftExitTime>=1.0/600)//进入阶段二分
+    {
+        ext1out<<"\tleftTime=";
+        printDoubleMinToTime(leftExitTime,ext1out);
+        ext1out<<resetiosflags(ios::fixed);
+        ext1out<<"  \trightTime=";
+        printDoubleMinToTime(rightExitTime,ext1out);
+        ext1out<<resetiosflags(ios::fixed);
+        ext1out<<"\tDelta_t="<<60*(rightExitTime-leftExitTime)<<"s."<<endl;
+        double x=0;
+        double y=0;
+        midExitTime=(rightExitTime+leftExitTime)/2.0;
+        getCurrentPosition(midExitTime,1,x,y);
+        int matchNo=bestMatchStation(x,y);
+        if(matchNo!=0)rightExitTime=midExitTime;//连上了
+        else if(matchNo==0)leftExitTime=midExitTime;//没连上
+    }
+    ext1out<<"[ANS-Ext/1-2]Precise Time=";
+    printDoubleMinToTime(midExitTime,ext1out);
+    ext1out<<"\tDelta_t=(+/-)"<<30*(rightExitTime-leftExitTime)<<"s."<<endl;
+    ext1out<<"完成"<<endl;
+    return;
+}

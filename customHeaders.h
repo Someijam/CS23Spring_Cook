@@ -90,6 +90,8 @@ extern ofstream task2out;
 extern ofstream task3out;
 extern ofstream task4out;
 extern ofstream task5out;
+extern ofstream ext1out;
+extern ofstream ext2out;
 
 //函数声明
 //结构体定义中需要使用的方法函数(需声明)
@@ -118,3 +120,4 @@ void task2Process();//任务2:主体调用
 void task3Process();//任务3:给定3个坐标，找到要求的基站
 void task4Process();//任务4:类似任务3
 void task5Process();//任务5过程
+void ext1Process();//扩展1过程

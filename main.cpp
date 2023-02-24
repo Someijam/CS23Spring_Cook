@@ -39,6 +39,8 @@ ofstream task2out;
 ofstream task3out;
 ofstream task4out;
 ofstream task5out;
+ofstream ext1out;
+ofstream ext2out;
 
 int main()
 {
@@ -54,6 +56,8 @@ int main()
     task3out.open("./outputs/task3.out",ios::out);
     task4out.open("./outputs/task4.out",ios::out);
     task5out.open("./outputs/task5.out",ios::out);
+    ext1out.open("./outputs/ext1.out",ios::out);
+    // ext2out.open("./outputs/ext2.out",ios::out);
     //打开用于输出答案的文件
     logout.open(cmdLogPath.c_str(),ios::out);//日志文件
 
@@ -121,6 +125,14 @@ int main()
     setDateTime();//更新日志文件里的时间
     logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"Task5已完成。"<<endl;
     /*****************任务5结束*****************/
+
+    /******************扩展1******************/
+    setDateTime();//更新日志文件里的时间
+    logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"即将执行Ext1，请前往\"outputs/ext1.out\"下查看输出结果。"<<endl;
+    ext1Process();
+    setDateTime();//更新日志文件里的时间
+    logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"Ext1已完成。"<<endl;
+    /*****************扩展1结束*****************/
 
 
 
