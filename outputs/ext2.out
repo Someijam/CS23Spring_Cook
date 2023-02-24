@@ -1,1 +1,28 @@
-分析第3段轨迹
+分析第3段移动轨迹
+	leftTime=12:07:13.000  	rightTime=12:07:14.000	Delta_t=1s.
+	leftTime=12:07:13.500  	rightTime=12:07:14.000	Delta_t=0.5s.
+	leftTime=12:07:13.750  	rightTime=12:07:14.000	Delta_t=0.25s.
+	leftTime=12:07:13.750  	rightTime=12:07:13.875	Delta_t=0.125s.
+[ANS-Ext/2]Precise Entry Time=12:07:13.812
+	leftTime=12:07:45.000  	rightTime=12:07:47.000	Delta_t=2s.
+	leftTime=12:07:46.000  	rightTime=12:07:47.000	Delta_t=1s.
+	leftTime=12:07:46.000  	rightTime=12:07:46.500	Delta_t=0.5s.
+	leftTime=12:07:46.000  	rightTime=12:07:46.250	Delta_t=0.25s.
+	leftTime=12:07:46.125  	rightTime=12:07:46.250	Delta_t=0.125s.
+[ANS-Ext/2]Precise Exit Time=12:07:46.187
+During Time=32.375s.	Delta_t=(+/-)0.031s.
+
+分析第6段移动轨迹
+	leftTime=15:13:03.000  	rightTime=15:13:04.000	Delta_t=1s.
+	leftTime=15:13:03.000  	rightTime=15:13:03.500	Delta_t=0.5s.
+	leftTime=15:13:03.000  	rightTime=15:13:03.250	Delta_t=0.25s.
+	leftTime=15:13:03.000  	rightTime=15:13:03.125	Delta_t=0.125s.
+[ANS-Ext/2]Precise Entry Time=15:13:03.062
+	leftTime=15:14:21.000  	rightTime=15:14:23.000	Delta_t=2s.
+	leftTime=15:14:22.000  	rightTime=15:14:23.000	Delta_t=1s.
+	leftTime=15:14:22.500  	rightTime=15:14:23.000	Delta_t=0.5s.
+	leftTime=15:14:22.500  	rightTime=15:14:22.750	Delta_t=0.25s.
+	leftTime=15:14:22.625  	rightTime=15:14:22.750	Delta_t=0.125s.
+[ANS-Ext/2]Precise Exit Time=15:14:22.687
+During Time=79.625s.	Delta_t=(+/-)0.031s.
+完成

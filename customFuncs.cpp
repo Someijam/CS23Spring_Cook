@@ -602,6 +602,7 @@ void printDoubleMinToTime(long double time,ofstream &fout)//给出离散时间�
     // fout<<sec;
     return;
 }
+
 //任务辅助函数
 void task1PreOrderTraverse_2(QuadTreeNode* T)//任务1:一直往西北找的最小区域，1023遍历
 {
@@ -768,6 +769,91 @@ void task2PreOrderTraverse_4(QuadTreeNode* T)//任务2:遍历最东南角西北�
             task2PreOrderTraverse_4(T->children[i]);
         }
     }
+    return;
+}
+void ext2Route(int i)//扩展2过程i
+{
+    int endTime;
+    if(i==terminalMovement.size()-1)endTime=1140;
+    else endTime=terminalMovement[i+1].startTime;//结束时间为下一段路径的开始时间，最后一次是19:00(1140)
+    double presentX=terminalMovement[i].xs;
+    double presentY=terminalMovement[i].ys;//设置好起始坐标
+    long double leftEntryTime=0;
+    long double rightEntryTime=0;
+    long double leftExitTime=0;
+    long double rightExitTime=0;//二分法的四个时间
+    bool entried=false;
+    for(long double globalMapTime=terminalMovement[i].startTime;globalMapTime<=endTime;globalMapTime+=(1.0/60))//分度值，这个循环踩初始时间范围
+    {
+        getCurrentPosition(globalMapTime,i,presentX,presentY);//当前时间的坐标已经存入presentX presentY
+        vector<int> routeNo3Collection;
+        stationsNearBy(routeNo3Collection,presentX,presentY);
+        if(routeNo3Collection.size()==2&&entried==false)//进入重叠区
+        {
+            rightEntryTime=globalMapTime;
+            leftEntryTime=globalMapTime-(1.0/60);
+            entried=true;
+        }
+        if(routeNo3Collection.size()==1&&entried==true)//退出重叠区
+        {
+            rightExitTime=globalMapTime;
+            leftExitTime=globalMapTime-(2.0/60);
+            // cout<<leftEntryTime<<endl;
+            // cout<<rightEntryTime<<endl;
+            // cout<<"---"<<endl;
+            // cout<<leftExitTime<<endl;
+            // cout<<rightExitTime<<endl;
+            break;
+        }
+    }
+    long double midEntryTime=0;
+    while(rightEntryTime-leftEntryTime>=1.0/600)//进入阶段二分
+    {
+        ext2out<<"\tleftTime=";
+        printDoubleMinToTime(leftEntryTime,ext2out);
+        ext2out<<resetiosflags(ios::fixed);
+        ext2out<<"  \trightTime=";
+        printDoubleMinToTime(rightEntryTime,ext2out);
+        ext2out<<resetiosflags(ios::fixed);
+        ext2out<<"\tDelta_t="<<60*(rightEntryTime-leftEntryTime)<<"s."<<endl;
+        midEntryTime=(rightEntryTime+leftEntryTime)/2.0;
+        double x=0;
+        double y=0;
+        getCurrentPosition(midEntryTime,i,x,y);
+        vector<int> routeNo3Collection;
+        stationsNearBy(routeNo3Collection,x,y);
+        bool matched=routeNo3Collection.size()==2;
+        if(matched)rightEntryTime=midEntryTime;//连上了
+        else if(!matched)leftEntryTime=midEntryTime;//没连上
+    }
+    ext2out<<"[ANS-Ext/2]Precise Entry Time=";
+    printDoubleMinToTime(midEntryTime,ext2out);
+    ext2out<<endl;
+    // ext2out<<"\tDelta_t=(+/-)"<<30*(rightEntryTime-leftEntryTime)<<"s."<<endl;
+    long double midExitTime=0;
+    while(rightExitTime-leftExitTime>=1.0/600)//进入阶段二分
+    {
+        ext2out<<"\tleftTime=";
+        printDoubleMinToTime(leftExitTime,ext2out);
+        ext2out<<resetiosflags(ios::fixed);
+        ext2out<<"  \trightTime=";
+        printDoubleMinToTime(rightExitTime,ext2out);
+        ext2out<<resetiosflags(ios::fixed);
+        ext2out<<"\tDelta_t="<<60*(rightExitTime-leftExitTime)<<"s."<<endl;
+        double x=0;
+        double y=0;
+        midExitTime=(rightExitTime+leftExitTime)/2.0;
+        getCurrentPosition(midExitTime,i,x,y);
+        vector<int> routeNo3Collection;
+        stationsNearBy(routeNo3Collection,x,y);
+        if(routeNo3Collection.size()!=2)rightExitTime=midExitTime;//出去了
+        else if(routeNo3Collection.size()==2)leftExitTime=midExitTime;//没出去
+    }
+    ext2out<<"[ANS-Ext/2]Precise Exit Time=";
+    printDoubleMinToTime(midExitTime,ext2out);
+    ext2out<<endl;
+    ext2out<<"During Time="<<60*(midExitTime-midEntryTime)<<"s.";
+    ext2out<<"\tDelta_t=(+/-)"<<30*(rightExitTime-leftExitTime)<<"s."<<endl;
     return;
 }
 
@@ -1026,38 +1112,11 @@ void ext1Process()//扩展1过程
 }
 void ext2Process()//扩展2过程
 {
-    ext2out<<"分析第3段轨迹"<<endl;
-    int endTime=14*60+30;
-    double presentX=terminalMovement[3].xs;
-    double presentY=terminalMovement[3].ys;//设置好起始坐标
-    long double leftEntryTime=0;
-    long double rightEntryTime=0;
-    long double leftExitTime=0;
-    long double rightExitTime=0;//二分法的四个时间
-    bool entried=false;
-    for(long double globalMapTime=terminalMovement[3].startTime;globalMapTime<=endTime;globalMapTime+=(1.0/60))//分度值，这个循环踩初始时间范围
-    {
-        getCurrentPosition(globalMapTime,3,presentX,presentY);//当前时间的坐标已经存入presentX presentY
-        vector<int> routeNo3Collection;
-        stationsNearBy(routeNo3Collection,presentX,presentY);
-        if(routeNo3Collection.size()==2&&entried==false)//进入重叠区
-        {
-            rightEntryTime=globalMapTime;
-            leftEntryTime=globalMapTime-(1.0/60);
-            entried=true;
-        }
-        if(routeNo3Collection.size()==1&&entried==true)//退出重叠区
-        {
-            rightExitTime=globalMapTime;
-            leftExitTime=globalMapTime-(1.0/60);
-            cout<<leftEntryTime<<endl;
-            cout<<rightEntryTime<<endl;
-            cout<<"---"<<endl;
-            cout<<leftExitTime<<endl;
-            cout<<rightExitTime<<endl;
-            break;
-        }
-    }
-    
+    ext2out<<"分析第3段移动轨迹"<<endl;
+    ext2Route(3);
+    ext2out<<endl;
+    ext2out<<"分析第6段移动轨迹"<<endl;
+    ext2Route(6);
+    ext2out<<"完成"<<endl;
     return;
 }
