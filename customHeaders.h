@@ -121,3 +121,4 @@ void task3Process();//任务3:给定3个坐标，找到要求的基站
 void task4Process();//任务4:类似任务3
 void task5Process();//任务5过程
 void ext1Process();//扩展1过程
+void ext2Process();//扩展2过程

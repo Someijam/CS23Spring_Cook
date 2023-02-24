@@ -900,7 +900,7 @@ void task5Process()//任务5过程
             if(int(globalMapTime)%60<10)task5out<<"0";
             task5out<<int(globalMapTime)%60<<":";
             double sec=60*(globalMapTime-int(globalMapTime));
-            if(int(sec)<10)task5out<<"0";
+            if(sec<9.9)task5out<<"0";
             task5out<<sec<<"] ";
             if(shouldConnectStationIndex==0)
             {
@@ -963,6 +963,7 @@ void ext1Process()//扩展1过程
             rightEntryTime=globalMapTime;
             leftEntryTime=globalMapTime-(1.0/60);//记录进入瞬间的两个时间边界
             validConnections=1;
+            ext1out<<"连接上基站#"<<Stations[shouldConnectStationIndex].no<<endl;
         }
         if(validConnections==1&&shouldConnectStationIndex==0)//条件：第一次离开有信号区域
         {
@@ -972,7 +973,7 @@ void ext1Process()//扩展1过程
             break;
         }
     }
-
+    ext1out<<endl;
     long double midEntryTime=0;
     ext1out<<"对连接上第一个基站的时间二分求精确值"<<endl;
     while(rightEntryTime-leftEntryTime>=1.0/600)//进入阶段二分
@@ -1021,5 +1022,42 @@ void ext1Process()//扩展1过程
     printDoubleMinToTime(midExitTime,ext1out);
     ext1out<<"\tDelta_t=(+/-)"<<30*(rightExitTime-leftExitTime)<<"s."<<endl;
     ext1out<<"完成"<<endl;
+    return;
+}
+void ext2Process()//扩展2过程
+{
+    ext2out<<"分析第3段轨迹"<<endl;
+    int endTime=14*60+30;
+    double presentX=terminalMovement[3].xs;
+    double presentY=terminalMovement[3].ys;//设置好起始坐标
+    long double leftEntryTime=0;
+    long double rightEntryTime=0;
+    long double leftExitTime=0;
+    long double rightExitTime=0;//二分法的四个时间
+    bool entried=false;
+    for(long double globalMapTime=terminalMovement[3].startTime;globalMapTime<=endTime;globalMapTime+=(1.0/60))//分度值，这个循环踩初始时间范围
+    {
+        getCurrentPosition(globalMapTime,3,presentX,presentY);//当前时间的坐标已经存入presentX presentY
+        vector<int> routeNo3Collection;
+        stationsNearBy(routeNo3Collection,presentX,presentY);
+        if(routeNo3Collection.size()==2&&entried==false)//进入重叠区
+        {
+            rightEntryTime=globalMapTime;
+            leftEntryTime=globalMapTime-(1.0/60);
+            entried=true;
+        }
+        if(routeNo3Collection.size()==1&&entried==true)//退出重叠区
+        {
+            rightExitTime=globalMapTime;
+            leftExitTime=globalMapTime-(1.0/60);
+            cout<<leftEntryTime<<endl;
+            cout<<rightEntryTime<<endl;
+            cout<<"---"<<endl;
+            cout<<leftExitTime<<endl;
+            cout<<rightExitTime<<endl;
+            break;
+        }
+    }
+    
     return;
 }
