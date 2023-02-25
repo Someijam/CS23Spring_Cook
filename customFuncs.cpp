@@ -413,6 +413,12 @@ void diverseTree(QuadTreeNode* leaf)//将此树叶分为四个子节点
         logout<<"["<<fTime<<"]"<<"[TDIV/ERR]此种情况绝对不会出现，除非是见鬼了：尝试将四叉树的非叶节点再次四分"<<endl;
         exit(0);
     }
+    if(leaf->level>=MAX_LEVEL)
+    {
+        setDateTime();//更新日志文件里的时间
+        logout<<"["<<fTime<<"]"<<"[TDIV/ERR]此种情况绝对不会出现，除非是见鬼了：尝试将四叉树所允许的最深节点再次四分"<<endl;
+        exit(0);
+    }
     for(int i=0;i<4;i++)
     {
         leaf->children[i]=new QuadTreeNode;//此处动态分配了内存
@@ -467,8 +473,7 @@ void addStationToTree(int index)//将索引为index基站添加到四叉树
     {
         insertTarget->includedStationIndex.push_back(index);
     }//叶节点没有满则继续插入
-
-    else if(insertTarget->includedStationIndex.size()==MAX_UNIT_NUMS)
+    else if((insertTarget->includedStationIndex.size()==MAX_UNIT_NUMS)&&(insertTarget->level<MAX_LEVEL))
     {
         diverseTree(insertTarget);
         for(int i=0;i<insertTarget->includedStationIndex.size();i++)
@@ -479,11 +484,16 @@ void addStationToTree(int index)//将索引为index基站添加到四叉树
         insertTarget->includedStationIndex.clear();
         // insertTarget->children[defineWhichQuadrant(&st,insertTarget)]->includedStationIndex.push_back(st.no);//转移完毕，有很大概率上面的9个还是会挤到一起，所以得递归调用
         addStationToTree(index);//递归调用，上面节点挤到一起了还得再分
-    }//叶节点满了就转移到子节点稍后再插入
+    }//叶节点满了并且没有达到最大等级就转移到子节点稍后再插入
+    else if((insertTarget->includedStationIndex.size()>=MAX_UNIT_NUMS)&&(insertTarget->level==MAX_LEVEL))
+    {
+        insertTarget->includedStationIndex.push_back(index);
+    }
+    //叶节点满了，但是叶的等级达到最大则继续插入
     else
     {
         setDateTime();//更新日志文件里的时间
-        logout<<"["<<fTime<<"]"<<"[STAD/ERR]此种情况绝对不会出现，除非是见鬼了：insertTarget->includedStationIndex.size()="<<insertTarget->includedStationIndex.size()<<endl;
+        logout<<"["<<fTime<<"]"<<"[STAD/ERR]此种情况绝对不会出现，除非是见鬼了，在四叉树插入这里"<<endl;
         exit(0);
     }
 
@@ -1058,6 +1068,7 @@ void advCheck(int i,ofstream &fout)//检查第i段路径连接上伪基站的情
     }
     if(i==12)fout<<"[ANS-Adv/1]Precise Exit Time=";
     else if(i==9)fout<<"[ANS-Adv/2]Precise Exit Time=";
+    else fout<<"[ANS-Adv/?]Precise Exit Time=";
     printDoubleMinToTime(midExitTime,fout);
     fout<<endl;
     fout<<"During Time="<<60*(midExitTime-midEntryTime)<<"s.";
