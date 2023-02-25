@@ -11,8 +11,8 @@
 
 //宏定义
 #define BORDER_EXP 17//地图尺寸指数
-#define MAX_UNIT_NUNS (int)9//单分块最大基站数
-
+#define MAX_UNIT_NUMS (int)9//单分块最大基站数，在等级不超过下方MAX_LEVEL的情况下
+#define MAX_LEVEL 8//四叉树最深树叶的等级
 //名字空间
 using namespace std;
 
@@ -78,7 +78,7 @@ extern char* presentDateTime;
 extern tm* ltm;
 extern string fDate;
 extern string fTime;
-extern int maxLevel;
+// extern int maxLevel;
 extern bool task1_2Finished;
 extern bool task1_3Finished;
 extern QuadTreeNode* NW_estChunk;//最西北角区块地址

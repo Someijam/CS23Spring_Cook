@@ -463,11 +463,12 @@ void addStationToTree(int index)//将索引为index基站添加到四叉树
         insertTarget=insertTarget->children[defineWhichQuadrant(&Stations[index],insertTarget)];
     }
     //将insertTargrt定位到需要插入的位置
-    if((insertTarget->includedStationIndex.size()<MAX_UNIT_NUNS)&&(insertTarget->includedStationIndex.size()>=0))
+    if((insertTarget->includedStationIndex.size()<MAX_UNIT_NUMS)&&(insertTarget->includedStationIndex.size()>=0))
     {
         insertTarget->includedStationIndex.push_back(index);
     }//叶节点没有满则继续插入
-    else if(insertTarget->includedStationIndex.size()==MAX_UNIT_NUNS)
+
+    else if(insertTarget->includedStationIndex.size()==MAX_UNIT_NUMS)
     {
         diverseTree(insertTarget);
         for(int i=0;i<insertTarget->includedStationIndex.size();i++)
@@ -680,7 +681,7 @@ int indexOfFakeStationNearBy(long double time,double x,double y)//给出当前�
 }
 
 //任务辅助函数
-void task1PreOrderTraverse_2(QuadTreeNode* T)//任务1:一直往西北找的最小区域，1023遍历
+void task1PreOrderTraverse_2(QuadTreeNode* T)//任务1:一直往西北找的最小区域，以1023遍历的第一个有基站的树叶区块作为最西北区块
 {
     if(!T)return;
     else
@@ -713,7 +714,7 @@ void task1PreOrderTraverse_2(QuadTreeNode* T)//任务1:一直往西北找的最�
     }
     return;
 }
-void task1PreOrderTraverse_3(QuadTreeNode* T)//任务1:一直往东南找的最小区域，3021遍历
+void task1PreOrderTraverse_3(QuadTreeNode* T)//任务1:一直往东南找的最小区域，以3021遍历的第一个有基站的树叶区块作为最东南区块
 {
     if(!T)return;
     else
@@ -751,7 +752,7 @@ void task2PreOrderTraverse_1(QuadTreeNode* T)//任务2:遍历最西北角东侧�
     if(!T)return;
     else
     {
-        if(T->isLeaf&&(T->westNode()==NW_estChunk))
+        if(T->isLeaf&&(T->westNode()==NW_estChunk))//找到紧挨着原区块的树叶区块作为目标区块
         {
             task2out<<"#Lv."<<T->level<<" 区块：("<<T->x-2*T->quarterWidth()<<"<=x<="<<T->x+2*T->quarterWidth()<<"),\t ("<<T->y-2*T->quarterWidth()<<"<=y<="<<T->y+2*T->quarterWidth()<<")"<<endl;
             // task2out<<"X:"<<T->prefix.first<<'\t'<<"Y:"<<T->prefix.second<<endl;
@@ -776,7 +777,7 @@ void task2PreOrderTraverse_2(QuadTreeNode* T)//任务2:遍历最西北角南侧�
     if(!T)return;
     else
     {
-        if(T->isLeaf&&(T->northNode()==NW_estChunk))
+        if(T->isLeaf&&(T->northNode()==NW_estChunk))//找到紧挨着原区块的树叶区块作为目标区块
         {
             task2out<<"#Lv."<<T->level<<" 区块：("<<T->x-2*T->quarterWidth()<<"<=x<="<<T->x+2*T->quarterWidth()<<"),\t ("<<T->y-2*T->quarterWidth()<<"<=y<="<<T->y+2*T->quarterWidth()<<")"<<endl;
             // task1out<<"X:"<<T->prefix.first<<'\t'<<"Y:"<<T->prefix.second<<endl;
@@ -1180,7 +1181,12 @@ void task5Process()//任务5过程
     {
         task5out<<"终端正在第"<<i<<"段路径上移动:"<<endl;
         int endTime;
-        if(i==terminalMovement.size()-1)endTime=1140;
+        if(i==terminalMovement.size()-1)
+        {
+            endTime=terminalMovement[i].startTime+distanceBetween(terminalMovement[i].xs,terminalMovement[i].ys,terminalMovement[i].xe,terminalMovement[i].ye)/(50.0*terminalMovement[i].velocity/3.0);
+            // cout<<endTime<<endl;
+            // cout<<"="<<terminalMovement[i].startTime<<"+"<<distanceBetween(terminalMovement[i].xs,terminalMovement[i].ys,terminalMovement[i].xe,terminalMovement[i].ye)<<"m / 50.0*"<<terminalMovement[i].velocity<<"/3.0 m/min"<<endl;
+        }
         else endTime=terminalMovement[i+1].startTime;//结束时间为下一段路径的开始时间，最后一次是19:00(1140)
         double presentX=terminalMovement[i].xs;
         double presentY=terminalMovement[i].ys;//设置好起始坐标

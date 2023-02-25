@@ -16,7 +16,7 @@ time_t now = time(0);
 tm* ltm = localtime(&now);
 string fDate="";
 string fTime="";
-int maxLevel=0;
+// int maxLevel=0;
 bool task1_2Finished=false;
 bool task1_3Finished=false;
 QuadTreeNode* NW_estChunk;//最西北角区块地址
