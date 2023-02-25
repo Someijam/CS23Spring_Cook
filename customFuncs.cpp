@@ -659,15 +659,15 @@ int indexOfFakeStationNearBy(long double time,double x,double y)//给出当前�
         double fakeX;
         double fakeY;
         fakeStationMovement[i].getCurrentPosition(time,fakeX,fakeY);//更新伪基站坐标
-        printDoubleMinToTime(time,logout);
-        logout<<" Term Position=("<<x<<","<<y<<")"<<"\t FakeSt#"<<fakeStationMovement[i].no<<" Position=("<<fakeX<<","<<fakeY<<")\t Distance="<<distanceBetween(x,y,fakeX,fakeY)<<endl;
+        // printDoubleMinToTime(time,logout);
+        // logout<<" Term Position=("<<x<<","<<y<<")"<<"\t FakeSt#"<<fakeStationMovement[i].no<<" Position=("<<fakeX<<","<<fakeY<<")\t Distance="<<distanceBetween(x,y,fakeX,fakeY)<<endl;
         if(distanceBetween(x,y,fakeX,fakeY)<=nearestDistance)
         {
             nearestDistance=distanceBetween(x,y,fakeX,fakeY);
             no=i;
         }
     }
-    logout<<endl;
+    // logout<<endl;
     return no;
 }
 
