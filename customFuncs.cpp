@@ -183,6 +183,14 @@ void quadtreeAssistTraverse4(QuadTreeNode* T)//辅助函数4
     }
     return;
 }
+double Station::validDistance()//基站的有效距离
+{
+    int baseDist;
+    if(this->type==0)baseDist=300;
+    else if(this->type==1)baseDist=1000;
+    else if(this->type==2)baseDist=5000;
+    return baseDist*sqrt(this->baseStrength);
+}
 void FakeSt::getCurrentPosition(long double time,double &x,double &y)//方法，给定时间获取当前伪基站位置
 {
     double sinTheta=(this->ye-this->ys)/sqrt(pow(this->xe-this->xs,2)+pow(this->ye-this->ys,2));
@@ -842,7 +850,12 @@ void task2PreOrderTraverse_4(QuadTreeNode* T)//任务2:遍历最东南角西北�
 void ext2Route(int i)//扩展2过程i
 {
     int endTime;
-    if(i==terminalMovement.size()-1)endTime=1140;
+    if(i==terminalMovement.size()-1)
+    {
+        endTime=terminalMovement[i].startTime+distanceBetween(terminalMovement[i].xs,terminalMovement[i].ys,terminalMovement[i].xe,terminalMovement[i].ye)/(50.0*terminalMovement[i].velocity/3.0);
+        // cout<<endTime<<endl;
+        // cout<<"="<<terminalMovement[i].startTime<<"+"<<distanceBetween(terminalMovement[i].xs,terminalMovement[i].ys,terminalMovement[i].xe,terminalMovement[i].ye)<<"m / 50.0*"<<terminalMovement[i].velocity<<"/3.0 m/min"<<endl;
+    }
     else endTime=terminalMovement[i+1].startTime;//结束时间为下一段路径的开始时间，最后一次是19:00(1140)
     double presentX=terminalMovement[i].xs;
     double presentY=terminalMovement[i].ys;//设置好起始坐标
@@ -851,21 +864,43 @@ void ext2Route(int i)//扩展2过程i
     long double leftExitTime=0;
     long double rightExitTime=0;//二分法的四个时间
     bool entried=false;
+    //Debug
+    // if(i==4)
+    // {
+    //     logout<<"Starts at:"<<terminalMovement[i].startTime<<endl;
+    // }
+    //Debug end
     for(long double globalMapTime=terminalMovement[i].startTime;globalMapTime<=endTime;globalMapTime+=(1.0/60))//分度值，这个循环踩初始时间范围
     {
         getCurrentPosition(globalMapTime,i,presentX,presentY);//当前时间的坐标已经存入presentX presentY
         vector<int> routeNo3Collection;
         stationsNearBy(routeNo3Collection,presentX,presentY);
-        if(routeNo3Collection.size()==2&&entried==false)//进入重叠区
+        //Debug
+        // if(i==4)
+        // {
+        //     printDoubleMinToTime(globalMapTime,logout);
+        //     logout<<" size="<<routeNo3Collection.size()<<endl;
+        // }
+        //Debug end
+        if(routeNo3Collection.size()==0)//一开始就没信号
         {
+            ext2out<<"开始阶段无信号或者一直仅可接收到一个基站的信号，因此无法确定重叠区域，跳过计算"<<endl;
+            return;
+        }
+        if(routeNo3Collection.size()>=2&&entried==false)//进入重叠区
+        {
+            ext2out<<"此重叠区开始时同时收取到"<<routeNo3Collection.size()<<"个基站信号:";
+            for(int j=0;j<routeNo3Collection.size();j++)ext2out<<"#"<<Stations[routeNo3Collection[j]].no<<" ";
+            ext2out<<endl;
             rightEntryTime=globalMapTime;
             leftEntryTime=globalMapTime-(1.0/60);
             entried=true;
         }
-        if(routeNo3Collection.size()==1&&entried==true)//退出重叠区
+        if(routeNo3Collection.size()<=1&&entried==true)//退出重叠区
         {
             rightExitTime=globalMapTime;
-            leftExitTime=globalMapTime-(2.0/60);
+            leftExitTime=globalMapTime-(1.0/60);
+            entried=false;
             // cout<<leftEntryTime<<endl;
             // cout<<rightEntryTime<<endl;
             // cout<<"---"<<endl;
@@ -890,7 +925,7 @@ void ext2Route(int i)//扩展2过程i
         getCurrentPosition(midEntryTime,i,x,y);
         vector<int> routeNo3Collection;
         stationsNearBy(routeNo3Collection,x,y);
-        bool matched=routeNo3Collection.size()==2;
+        bool matched=routeNo3Collection.size()>=2;
         if(matched)rightEntryTime=midEntryTime;//连上了
         else if(!matched)leftEntryTime=midEntryTime;//没连上
     }
@@ -898,6 +933,12 @@ void ext2Route(int i)//扩展2过程i
     printDoubleMinToTime(midEntryTime,ext2out);
     ext2out<<endl;
     // ext2out<<"\tDelta_t=(+/-)"<<30*(rightEntryTime-leftEntryTime)<<"s."<<endl;
+    if(entried==true)
+    {
+        leftExitTime=endTime;
+        rightExitTime=endTime;
+        ext2out<<"注意:此后，终端将一直处于重叠区内，即一直至少接收到2个基站的信号"<<endl;
+    }
     long double midExitTime=0;
     while(rightExitTime-leftExitTime>=1.0/600)//离开阶段二分
     {
@@ -914,8 +955,8 @@ void ext2Route(int i)//扩展2过程i
         getCurrentPosition(midExitTime,i,x,y);
         vector<int> routeNo3Collection;
         stationsNearBy(routeNo3Collection,x,y);
-        if(routeNo3Collection.size()!=2)rightExitTime=midExitTime;//出去了
-        else if(routeNo3Collection.size()==2)leftExitTime=midExitTime;//没出去
+        if(routeNo3Collection.size()<2)rightExitTime=midExitTime;//出去了
+        else if(routeNo3Collection.size()>=2)leftExitTime=midExitTime;//没出去
     }
     ext2out<<"[ANS-Ext/2]Precise Exit Time=";
     printDoubleMinToTime(midExitTime,ext2out);
@@ -1123,6 +1164,7 @@ void task5Process()//任务5过程
     vector<int> passedStationsIndexType0;
     vector<int> passedStationsIndexType1;
     vector<int> passedStationsIndexType2;
+    int noSignalCnt=0;
     int lastConnectedStationIndex=-1;//刚才连上的基站编号
     for(int i=1;i<terminalMovement.size();i++)//第i段移动轨迹
     {
@@ -1148,6 +1190,7 @@ void task5Process()//任务5过程
             if(shouldConnectStationIndex==0)
             {
                 task5out<<"无信号"<<endl;
+                noSignalCnt++;
             }
             else 
             {
@@ -1183,23 +1226,27 @@ void task5Process()//任务5过程
         task5out<<Stations[passedStationsIndexType2[i]].no<<" ";
     }
     task5out<<endl;
+    task5out<<"经过"<<noSignalCnt<<"个无信号区域(忽略无信号时间小于1s的区域)"<<endl;
     task5out<<"完成"<<endl;
     return;
 }
-void ext1Process()//扩展1过程
+/*
+void ext1Process(int i)//扩展1过程,查找第i段路径的信号精确范围
 {
     int validConnections=0;
-    ext1out<<"终端正在第1段路径上移动:"<<endl;
-    int endTime=11*60+30;//第一段路径时长30min
-    double presentX=terminalMovement[1].xs;
-    double presentY=terminalMovement[1].ys;//设置好起始坐标
+    ext1out<<"终端正在第"<<i<<"段路径上移动:"<<endl;
+    int endTime;
+    if(i==terminalMovement.size()-1)endTime=1140;
+    else endTime=terminalMovement[i+1].startTime;//结束时间为下一段路径的开始时间，最后一次是19:00(1140)
+    double presentX=terminalMovement[i].xs;
+    double presentY=terminalMovement[i].ys;//设置好起始坐标
     long double leftEntryTime=0;
     long double rightEntryTime=0;
     long double leftExitTime=0;
     long double rightExitTime=0;//二分法的四个时间
-    for(long double globalMapTime=terminalMovement[1].startTime;globalMapTime<=endTime;globalMapTime+=(1.0/60))//分度值为1/60min(1s)
+    for(long double globalMapTime=terminalMovement[i].startTime;globalMapTime<=endTime;globalMapTime+=(1.0/60))//分度值为1/60min(1s)
     {
-        getCurrentPosition(globalMapTime,1,presentX,presentY);//当前时间的坐标已经存入presentX presentY
+        getCurrentPosition(globalMapTime,i,presentX,presentY);//当前时间的坐标已经存入presentX presentY
         int shouldConnectStationIndex=bestMatchStation(presentX,presentY);
         if(validConnections==0&&shouldConnectStationIndex!=0)//条件：第一次进入有信号区域
         {
@@ -1231,7 +1278,7 @@ void ext1Process()//扩展1过程
         double x=0;
         double y=0;
         midEntryTime=(rightEntryTime+leftEntryTime)/2.0;
-        getCurrentPosition(midEntryTime,1,x,y);
+        getCurrentPosition(midEntryTime,i,x,y);
         int matchNo=bestMatchStation(x,y);
         if(matchNo!=0)rightEntryTime=midEntryTime;//连上了
         else if(matchNo==0)leftEntryTime=midEntryTime;//没连上
@@ -1256,10 +1303,120 @@ void ext1Process()//扩展1过程
         double x=0;
         double y=0;
         midExitTime=(rightExitTime+leftExitTime)/2.0;
-        getCurrentPosition(midExitTime,1,x,y);
+        getCurrentPosition(midExitTime,i,x,y);
         int matchNo=bestMatchStation(x,y);
         if(matchNo!=0)rightExitTime=midExitTime;//连上了
         else if(matchNo==0)leftExitTime=midExitTime;//没连上
+    }
+    ext1out<<"[ANS-Ext/1-2]Precise Time=";
+    printDoubleMinToTime(midExitTime,ext1out);
+    ext1out<<"\tDelta_t=(+/-)"<<30*(rightExitTime-leftExitTime)<<"s."<<endl;
+    ext1out<<"完成"<<endl;
+    return;
+}
+*/
+void ext1Process_2(int i)//扩展1，备用
+{
+    int initialStationIndex=0;//记录首个基站编号
+    bool enteredIn=false;
+    ext1out<<"终端正在第"<<i<<"段路径上移动:"<<endl;
+    int endTime;
+    if(i==terminalMovement.size()-1)
+    {
+        endTime=terminalMovement[i].startTime+distanceBetween(terminalMovement[i].xs,terminalMovement[i].ys,terminalMovement[i].xe,terminalMovement[i].ye)/(50.0*terminalMovement[i].velocity/3.0);
+        // cout<<endTime<<endl;
+        // cout<<"="<<terminalMovement[i].startTime<<"+"<<distanceBetween(terminalMovement[i].xs,terminalMovement[i].ys,terminalMovement[i].xe,terminalMovement[i].ye)<<"m / 50.0*"<<terminalMovement[i].velocity<<"/3.0 m/min"<<endl;
+    }
+    else endTime=terminalMovement[i+1].startTime;//结束时间为下一段路径的开始时间，最后一次是19:00(1140)
+    double presentX=terminalMovement[i].xs;
+    double presentY=terminalMovement[i].ys;//设置好起始坐标
+    long double leftEntryTime=0;
+    long double rightEntryTime=0;
+    long double leftExitTime=0;
+    long double rightExitTime=0;//二分法的四个时间
+    if(bestMatchStation(presentX,presentY)!=0)
+    {
+        enteredIn=true;
+        initialStationIndex=bestMatchStation(presentX,presentY);
+        ext1out<<"终端在这段路径一开始就连接上了基站#"<<Stations[initialStationIndex].no<<endl;
+        leftEntryTime=terminalMovement[i].startTime;
+        rightEntryTime=terminalMovement[i].startTime;
+    }
+    for(long double globalMapTime=terminalMovement[i].startTime;globalMapTime<=endTime;globalMapTime+=(1.0/60))//分度值为1/60min(1s)
+    {
+        getCurrentPosition(globalMapTime,i,presentX,presentY);//当前时间的坐标已经存入presentX presentY
+        int shouldConnectStationIndex=bestMatchStation(presentX,presentY);
+        if(shouldConnectStationIndex!=0&&enteredIn==false)//条件：第一次进入有信号区域
+        {
+            initialStationIndex=shouldConnectStationIndex;
+            enteredIn=true;
+            rightEntryTime=globalMapTime;
+            leftEntryTime=globalMapTime-(1.0/60);//记录进入瞬间的两个时间边界
+            ext1out<<"连接上基站#"<<Stations[shouldConnectStationIndex].no<<endl;
+        }
+        if(enteredIn==true)
+        {
+            if(distanceFromSttoPoint(Stations[initialStationIndex],presentX,presentY)>Stations[initialStationIndex].validDistance())//离开了
+            {
+                rightExitTime=globalMapTime;
+                leftExitTime=globalMapTime-(1.0/60);
+                enteredIn=false;
+                break;
+            }
+        }
+    }
+    if(initialStationIndex==0)
+    {
+        ext1out<<"此段路径不存在你描述的范围，原因：一直没有信号"<<endl;
+        ext1out<<"完成"<<endl;
+        return;
+    }
+    if(enteredIn==true)ext1out<<"终端再未离开此基站的有效区域"<<endl;
+    ext1out<<endl;
+    //下面进行二分
+    long double midEntryTime=(rightEntryTime+leftEntryTime)/2.0;
+    ext1out<<"对连接上第一个基站的时间二分求精确值"<<endl;
+    while(rightEntryTime-leftEntryTime>=1.0/600)//进入阶段二分
+    {
+        ext1out<<"\tleftTime=";
+        printDoubleMinToTime(leftEntryTime,ext1out);
+        ext1out<<resetiosflags(ios::fixed);
+        ext1out<<"  \trightTime=";
+        printDoubleMinToTime(rightEntryTime,ext1out);
+        ext1out<<resetiosflags(ios::fixed);
+        ext1out<<"\tDelta_t="<<60*(rightEntryTime-leftEntryTime)<<"s."<<endl;
+        double x=0;
+        double y=0;
+        midEntryTime=(rightEntryTime+leftEntryTime)/2.0;
+        getCurrentPosition(midEntryTime,i,x,y);
+        int matchNo=bestMatchStation(x,y);
+        if(matchNo==initialStationIndex)rightEntryTime=midEntryTime;//连上了
+        else leftEntryTime=midEntryTime;//没连上
+    }
+    ext1out<<"[ANS-Ext/1-1]Precise Time=";
+    printDoubleMinToTime(midEntryTime,ext1out);
+    ext1out<<"\tDelta_t=(+/-)"<<30*(rightEntryTime-leftEntryTime)<<"s."<<endl;
+    ext1out<<endl;
+
+    if(enteredIn==true)return;//未离开时，不需要求离开时间
+    long double midExitTime=0;
+    ext1out<<"对离开第一个基站有效范围的时间二分求精确值"<<endl;
+    while(rightExitTime-leftExitTime>=1.0/600)//进入阶段二分
+    {
+        ext1out<<"\tleftTime=";
+        printDoubleMinToTime(leftExitTime,ext1out);
+        ext1out<<resetiosflags(ios::fixed);
+        ext1out<<"  \trightTime=";
+        printDoubleMinToTime(rightExitTime,ext1out);
+        ext1out<<resetiosflags(ios::fixed);
+        ext1out<<"\tDelta_t="<<60*(rightExitTime-leftExitTime)<<"s."<<endl;
+        double x=0;
+        double y=0;
+        midExitTime=(rightExitTime+leftExitTime)/2.0;
+        getCurrentPosition(midExitTime,i,x,y);
+        int matchNo=bestMatchStation(x,y);
+        if(distanceFromSttoPoint(Stations[initialStationIndex],x,y)>Stations[initialStationIndex].validDistance())rightExitTime=midExitTime;//离开了
+        else leftExitTime=midExitTime;//没离开
     }
     ext1out<<"[ANS-Ext/1-2]Precise Time=";
     printDoubleMinToTime(midExitTime,ext1out);

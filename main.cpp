@@ -136,7 +136,7 @@ int main()
     /******************扩展1******************/
     setDateTime();//更新日志文件里的时间
     logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"即将执行Ext1，请前往\"outputs/ext1.out\"下查看输出结果。"<<endl;
-    ext1Process();
+    ext1Process_2(1);
     setDateTime();//更新日志文件里的时间
     logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"Ext1已完成。"<<endl;
     /*****************扩展1结束*****************/

@@ -46,6 +46,7 @@ struct Station//基站信息
     int type;//类别编号
     double baseStrength;//强度
     int no;//顺序编号
+    double validDistance();//有效距离
 };
 struct Route//移动路径
 {
@@ -136,7 +137,8 @@ void task2Process();//任务2:主体调用
 void task3Process();//任务3:给定3个坐标，找到要求的基站
 void task4Process();//任务4:类似任务3
 void task5Process();//任务5过程
-void ext1Process();//扩展1过程
+// void ext1Process(int i);//扩展1过程
+void ext1Process_2(int i);//扩展1，备用
 void ext2Process();//扩展2过程
 void adv1Process();//升级1过程
 void adv2Process();//升级2过程
