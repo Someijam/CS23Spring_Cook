@@ -29,9 +29,11 @@ int testy3[3]={23500,26354,28000};//任务3数据
 int testx4[3]={3000,70000,100000};
 int testy4[3]={36900,35000,7002};//任务4数据
 vector<Route> terminalMovement;//终端运动轨迹
+vector<FakeSt> fakeStationMovement;//伪基站移动轨迹
 
 FILE* fJZin;
 FILE* fRTin;
+FILE* fWZin;
 
 ofstream logout;
 ofstream task1out;
@@ -41,6 +43,8 @@ ofstream task4out;
 ofstream task5out;
 ofstream ext1out;
 ofstream ext2out;
+ofstream adv1out;
+ofstream adv2out;
 
 int main()
 {
@@ -58,6 +62,8 @@ int main()
     task5out.open("./outputs/task5.out",ios::out);
     ext1out.open("./outputs/ext1.out",ios::out);
     ext2out.open("./outputs/ext2.out",ios::out);
+    adv1out.open("./outputs/adv1.out",ios::out);
+    adv2out.open("./outputs/adv2.out",ios::out);
     //打开用于输出答案的文件
     logout.open(cmdLogPath.c_str(),ios::out);//日志文件
 
@@ -73,6 +79,7 @@ int main()
     //线性存储各个基站数据到内存，免得频繁磁盘IO
     readTermMoveFile();
     //线性读取终端移动路径到内存
+    readWZMoveFile();
     logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"Successfully added terminal routes to the memory."<<endl;
 
     int stCnt=0;
@@ -142,12 +149,38 @@ int main()
     logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"Ext2已完成。"<<endl;
     /*****************扩展2结束*****************/
 
+    /******************升级1******************/
+    setDateTime();//更新日志文件里的时间
+    logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"即将执行Adv1，请前往\"outputs/adv1.out\"下查看输出结果。"<<endl;
+    adv1Process();
+    setDateTime();//更新日志文件里的时间
+    logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"Adv1已完成。"<<endl;
+    /*****************升级1结束*****************/
 
+    /******************升级1******************/
+    setDateTime();//更新日志文件里的时间
+    logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"即将执行Adv2，请前往\"outputs/adv2.out\"下查看输出结果。"<<endl;
+    adv2Process();
+    setDateTime();//更新日志文件里的时间
+    logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"Adv2已完成。"<<endl;
+    /*****************升级1结束*****************/
+
+    miscProcess();//杂项
 
     /******************收尾工作******************/
     deleteMap(&MapRoot);//释放四叉树占用的空间
     setDateTime();//更新日志文件里的时间
     logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"四叉树已经清除。"<<endl;
     // logout<<"MaxLevel="<<maxLevel<<endl;
+    logout.close();
+    task1out.close();
+    task2out.close();
+    task3out.close();
+    task4out.close();
+    task5out.close();
+    ext1out.close();
+    ext2out.close();
+    adv1out.close();
+    adv2out.close();//关闭文件
     return 0;
 }

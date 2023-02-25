@@ -183,8 +183,18 @@ void quadtreeAssistTraverse4(QuadTreeNode* T)//辅助函数4
     }
     return;
 }
+void FakeSt::getCurrentPosition(long double time,double &x,double &y)//方法，给定时间获取当前伪基站位置
+{
+    double sinTheta=(this->ye-this->ys)/sqrt(pow(this->xe-this->xs,2)+pow(this->ye-this->ys,2));
+    double cosTheta=(this->xe-this->xs)/sqrt(pow(this->xe-this->xs,2)+pow(this->ye-this->ys,2));
+    double r=50*(this->velocity)*(time-this->startTime)/3.0;
+    // logout<<"r="<<r<<endl;
+    x=this->xs+r*cosTheta;
+    y=this->ys+r*sinTheta;
+    return;
+}
 
-//C++通用工具函数(需声明)
+//通用工具函数(需声明)
 bool isInVector(vector<int> &vec,int a)//待改进为模版函数，查找元素a是否在vec中
 {
     vector<int>::iterator i;
@@ -193,6 +203,10 @@ bool isInVector(vector<int> &vec,int a)//待改进为模版函数，查找元素
         if(*i.base()==a)return true;
     }
     return false;
+}
+double distanceBetween(double x1,double y1,double x2,double y2)//两点间距离公式
+{
+    return sqrt(pow(x1-x2,2)+pow(y1-y2,2));
 }
 
 //与main过程有关的函数(需声明)
@@ -339,6 +353,38 @@ void readTermMoveFile()//将终端路线读入内存
         exit(0);
     }
     fclose(fRTin);
+    return;
+}
+void readWZMoveFile()//将伪基站路径线性读入内存
+{
+    FakeSt tempSt={0};
+    fakeStationMovement.push_back(tempSt);
+    string wzFile="./test_data/wz001.txt";
+    fWZin=freopen(wzFile.c_str(),"r",stdin);
+    if(!fWZin)
+    {
+        cerr<<"伪基站文件不存在"<<endl;
+        exit(0);
+    }
+    char inputType[5]={0};
+    cin>>inputType;
+    if(strcmp(inputType,"WZ")==0)
+    {
+        int hr=0;
+        int min=0;
+        while(scanf("%lf,%lf,%lf,%lf,%lf,%d,%d,%d",&tempSt.xs,&tempSt.ys,&tempSt.xe,&tempSt.ye,&tempSt.velocity,&hr,&min,&tempSt.no)==8)//正常输入为7个参数
+        {
+            tempSt.startTime=60*hr+min;
+            fakeStationMovement.push_back(tempSt);
+        }
+    }
+    else
+    {
+        setDateTime();//更新日志文件里的时间
+        logout<<"["<<fTime<<"]"<<"[Main/ERR]"<<"伪基站路径文件头部有误"<<endl;
+        exit(0);
+    }
+    fclose(fWZin);
     return;
 }
 
@@ -584,6 +630,7 @@ void getCurrentPosition(long double currentTime,int routeNo,double &x,double &y)
     double cosTheta=(terminalMovement[routeNo].xe-terminalMovement[routeNo].xs)/sqrt(pow(terminalMovement[routeNo].xe-terminalMovement[routeNo].xs,2)+pow(terminalMovement[routeNo].ye-terminalMovement[routeNo].ys,2));
     double sinTheta=(terminalMovement[routeNo].ye-terminalMovement[routeNo].ys)/sqrt(pow(terminalMovement[routeNo].xe-terminalMovement[routeNo].xs,2)+pow(terminalMovement[routeNo].ye-terminalMovement[routeNo].ys,2));
     double r=(50*terminalMovement[routeNo].velocity*(currentTime-terminalMovement[routeNo].startTime))/3.0;
+    // logout<<"r="<<r<<endl;
     x=terminalMovement[routeNo].xs+r*cosTheta;
     y=terminalMovement[routeNo].ys+r*sinTheta;
     return;
@@ -597,10 +644,31 @@ void printDoubleMinToTime(long double time,ofstream &fout)//给出离散时间�
     fout<<hr<<":";
     if(min<10)fout<<"0";
     fout<<min<<":";
-    if(sec<10)fout<<"0";
+    if(int(sec)<10)fout<<"0";
     fout<<setiosflags(ios::fixed)<<setprecision(3)<<sec;//<<resetiosflags(ios::fixed);
     // fout<<sec;
     return;
+}
+int indexOfFakeStationNearBy(long double time,double x,double y)//给出当前坐标和时间，收集最近伪基站序号
+{
+    double nearestDistance=40;
+    int no=0;
+    for(int i=1;i<fakeStationMovement.size();i++)
+    {
+        //检查第i个伪基站是否在附近
+        double fakeX;
+        double fakeY;
+        fakeStationMovement[i].getCurrentPosition(time,fakeX,fakeY);//更新伪基站坐标
+        printDoubleMinToTime(time,logout);
+        logout<<" Term Position=("<<x<<","<<y<<")"<<"\t FakeSt#"<<fakeStationMovement[i].no<<" Position=("<<fakeX<<","<<fakeY<<")\t Distance="<<distanceBetween(x,y,fakeX,fakeY)<<endl;
+        if(distanceBetween(x,y,fakeX,fakeY)<=nearestDistance)
+        {
+            nearestDistance=distanceBetween(x,y,fakeX,fakeY);
+            no=i;
+        }
+    }
+    logout<<endl;
+    return no;
 }
 
 //任务辅助函数
@@ -831,7 +899,7 @@ void ext2Route(int i)//扩展2过程i
     ext2out<<endl;
     // ext2out<<"\tDelta_t=(+/-)"<<30*(rightEntryTime-leftEntryTime)<<"s."<<endl;
     long double midExitTime=0;
-    while(rightExitTime-leftExitTime>=1.0/600)//进入阶段二分
+    while(rightExitTime-leftExitTime>=1.0/600)//离开阶段二分
     {
         ext2out<<"\tleftTime=";
         printDoubleMinToTime(leftExitTime,ext2out);
@@ -854,6 +922,95 @@ void ext2Route(int i)//扩展2过程i
     ext2out<<endl;
     ext2out<<"During Time="<<60*(midExitTime-midEntryTime)<<"s.";
     ext2out<<"\tDelta_t=(+/-)"<<30*(rightExitTime-leftExitTime)<<"s."<<endl;
+    return;
+}
+void advCheck(int i,ofstream &fout)//检查第i段路径连接上伪基站的情况，包含二分
+{
+    int startTime=terminalMovement[i].startTime;
+    int endTime;
+    if(i==terminalMovement.size()-1)endTime=1140;
+    else endTime=terminalMovement[i+1].startTime;//结束时间为下一段路径的开始时间，最后一次是19:00(1140)
+    long double leftEntryTime=0;
+    long double rightEntryTime=0;
+    long double leftExitTime=0;
+    long double rightExitTime=0;//二分法的四个时间
+    bool isIn=false;
+    for(long double globalMapTime=startTime;globalMapTime<=endTime;globalMapTime+=(1.0/60))//确定二分法边界
+    {
+        double x;
+        double y;
+        getCurrentPosition(globalMapTime,i,x,y);//更新坐标
+        int connectedNo=indexOfFakeStationNearBy(globalMapTime,x,y);
+        if(connectedNo!=0&&isIn==false)//连上了，并且刚刚没连上
+        {
+            rightEntryTime=globalMapTime;
+            leftEntryTime=globalMapTime-(1.0/60);
+            isIn=true;
+            fout<<"连接上伪基站#"<<fakeStationMovement[connectedNo].no<<endl;
+        }
+        if(connectedNo==0&&isIn==true)//没连上，但是刚刚连上了
+        {
+            rightExitTime=globalMapTime;
+            leftExitTime=globalMapTime-(1.0/60);
+            isIn=false;
+            // cout<<leftEntryTime<<endl;
+            // cout<<rightEntryTime<<endl;
+            // cout<<"---"<<endl;
+            // cout<<leftExitTime<<endl;
+            // cout<<rightExitTime<<endl;
+            break;
+        }
+    }
+    long double midEntryTime=0;
+    fout<<"研究连接上伪基站的精确时间"<<endl;
+    while (rightEntryTime-leftEntryTime>=1.0/600)//进入阶段二分
+    {
+        fout<<"\tleftTime=";
+        printDoubleMinToTime(leftEntryTime,fout);
+        fout<<resetiosflags(ios::fixed);
+        fout<<"  \trightTime=";
+        printDoubleMinToTime(rightEntryTime,fout);
+        fout<<resetiosflags(ios::fixed);
+        fout<<"\tDelta_t="<<60*(rightEntryTime-leftEntryTime)<<"s."<<endl;
+        double x=0;
+        double y=0;
+        midEntryTime=(rightEntryTime+leftEntryTime)/2.0;
+        getCurrentPosition(midEntryTime,i,x,y);
+        int connectedNo=indexOfFakeStationNearBy(midEntryTime,x,y);
+        if(connectedNo!=0)rightEntryTime=midEntryTime;//连上了
+        else if(connectedNo==0)leftEntryTime=midEntryTime;//没连上
+    }
+    if(i==12)fout<<"[ANS-Adv/1]Precise Entry Time=";
+    else if(i==9)fout<<"[ANS-Adv/2]Precise Entry Time=";
+    printDoubleMinToTime(midEntryTime,fout);
+    fout<<endl;
+
+    fout<<"研究断开伪基站的具体时间"<<endl;
+    long double midExitTime=0;
+    while (rightExitTime-leftExitTime>=1.0/600)//进入阶段二分
+    {
+        fout<<"\tleftTime=";
+        printDoubleMinToTime(leftExitTime,fout);
+        fout<<resetiosflags(ios::fixed);
+        fout<<"  \trightTime=";
+        printDoubleMinToTime(rightExitTime,fout);
+        fout<<resetiosflags(ios::fixed);
+        fout<<"\tDelta_t="<<60*(rightExitTime-leftExitTime)<<"s."<<endl;
+        double x=0;
+        double y=0;
+        midExitTime=(rightExitTime+leftExitTime)/2.0;
+        getCurrentPosition(midExitTime,i,x,y);
+        int connectedNo=indexOfFakeStationNearBy(midExitTime,x,y);
+        if(connectedNo!=0)leftExitTime=midExitTime;//还在连着
+        else if(connectedNo==0)rightExitTime=midExitTime;//断开了
+    }
+    if(i==12)fout<<"[ANS-Adv/1]Precise Exit Time=";
+    else if(i==9)fout<<"[ANS-Adv/2]Precise Exit Time=";
+    printDoubleMinToTime(midExitTime,fout);
+    fout<<endl;
+    fout<<"During Time="<<60*(midExitTime-midEntryTime)<<"s.";
+    fout<<"\tDelta_t="<<30*(rightExitTime-leftExitTime)<<"s."<<endl;
+    fout<<endl;
     return;
 }
 
@@ -1118,5 +1275,24 @@ void ext2Process()//扩展2过程
     ext2out<<"分析第6段移动轨迹"<<endl;
     ext2Route(6);
     ext2out<<"完成"<<endl;
+    return;
+}
+void adv1Process()//升级1过程
+{
+    adv1out<<"正在检查第12段移动轨迹"<<endl;
+    advCheck(12,adv1out);
+    adv1out<<"完成"<<endl;
+    return;
+}
+void adv2Process()//升级2过程
+{
+    adv2out<<"正在检查第9段移动轨迹"<<endl;
+    advCheck(9,adv2out);
+    adv2out<<"完成"<<endl;
+    return;
+}
+void miscProcess()//杂项
+{
+    // cout<<indexOfFakeStationNearBy()
     return;
 }

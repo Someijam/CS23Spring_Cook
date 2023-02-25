@@ -56,7 +56,17 @@ struct Route//移动路径
     double velocity;//速度
     int startTime;//离散时间=hour*60+min
 };
-
+struct FakeSt//伪基站路径
+{
+    double xs;
+    double ys;
+    double xe;
+    double ye;
+    double velocity;
+    int startTime;
+    int no;
+    void getCurrentPosition(long double time,double &x,double &y);//方法，给定时间获取当前伪基站位置
+};
 
 //全局变量
 extern vector<Station> Stations;
@@ -80,9 +90,11 @@ extern int testy3[3];//任务3数据
 extern int testx4[3];
 extern int testy4[3];//任务4数据
 extern vector<Route> terminalMovement;//终端运动轨迹
+extern vector<FakeSt> fakeStationMovement;//伪基站移动轨迹
 
 extern FILE* fJZin;
 extern FILE* fRTin;
+extern FILE* fWZin;
 
 extern ofstream logout;
 extern ofstream task1out;
@@ -92,6 +104,8 @@ extern ofstream task4out;
 extern ofstream task5out;
 extern ofstream ext1out;
 extern ofstream ext2out;
+extern ofstream adv1out;
+extern ofstream adv2out;
 
 //函数声明
 //结构体定义中需要使用的方法函数(需声明)
@@ -100,13 +114,15 @@ void quadtreeAssistTraverse2(QuadTreeNode* T);//辅助函数2
 void quadtreeAssistTraverse3(QuadTreeNode* T);//辅助函数3
 void quadtreeAssistTraverse4(QuadTreeNode* T);//辅助函数4
 
-//C++通用工具函数(需声明)
+//通用工具函数(需声明)
 bool isInVector(vector<int> &vec,int a);//待改进为模版函数，查找元素a是否在vec中
+double distanceBetween(double x1,double y1,double x2,double y2);//两点间距离公式
 
 //与main过程有关的函数(需声明)
 void setDateTime();//更新时间
 void readJzFile();//将基站文件读入内存
 void readTermMoveFile();//将终端路线读入内存
+void readWZMoveFile();//将伪基站路径线性读入内存
 
 //和四叉树结构有关的函数(需声明)
 int defineWhichQuadrant(Station* st,QuadTreeNode* tree);//查找这个基站相对于当前中心的象限
@@ -122,3 +138,6 @@ void task4Process();//任务4:类似任务3
 void task5Process();//任务5过程
 void ext1Process();//扩展1过程
 void ext2Process();//扩展2过程
+void adv1Process();//升级1过程
+void adv2Process();//升级2过程
+void miscProcess();//杂项

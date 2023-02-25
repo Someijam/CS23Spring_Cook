@@ -1,0 +1,17 @@
+正在检查第9段移动轨迹
+连接上伪基站#70004
+研究连接上伪基站的精确时间
+	leftTime=16:45:56.000  	rightTime=16:45:57.000	Delta_t=1s.
+	leftTime=16:45:56.000  	rightTime=16:45:56.500	Delta_t=0.5s.
+	leftTime=16:45:56.000  	rightTime=16:45:56.250	Delta_t=0.25s.
+	leftTime=16:45:56.000  	rightTime=16:45:56.125	Delta_t=0.125s.
+[ANS-Adv/2]Precise Entry Time=16:45:56.062
+研究断开伪基站的具体时间
+	leftTime=16:46:17.000  	rightTime=16:46:18.000	Delta_t=1s.
+	leftTime=16:46:17.500  	rightTime=16:46:18.000	Delta_t=0.5s.
+	leftTime=16:46:17.750  	rightTime=16:46:18.000	Delta_t=0.25s.
+	leftTime=16:46:17.875  	rightTime=16:46:18.000	Delta_t=0.125s.
+[ANS-Adv/2]Precise Exit Time=16:46:17.937
+During Time=21.875s.	Delta_t=0.031s.
+
+完成
