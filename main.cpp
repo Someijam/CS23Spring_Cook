@@ -144,7 +144,7 @@ int main()
     /******************扩展2******************/
     setDateTime();//更新日志文件里的时间
     logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"即将执行Ext2，请前往\"outputs/ext2.out\"下查看输出结果。"<<endl;
-    ext2Process();
+    ext2Process(3,6);
     setDateTime();//更新日志文件里的时间
     logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"Ext2已完成。"<<endl;
     /*****************扩展2结束*****************/
@@ -152,7 +152,7 @@ int main()
     /******************升级1******************/
     setDateTime();//更新日志文件里的时间
     logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"即将执行Adv1，请前往\"outputs/adv1.out\"下查看输出结果。"<<endl;
-    adv1Process();
+    adv1Process(12);
     setDateTime();//更新日志文件里的时间
     logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"Adv1已完成。"<<endl;
     /*****************升级1结束*****************/
@@ -160,7 +160,7 @@ int main()
     /******************升级1******************/
     setDateTime();//更新日志文件里的时间
     logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"即将执行Adv2，请前往\"outputs/adv2.out\"下查看输出结果。"<<endl;
-    adv2Process();
+    adv2Process(9);
     setDateTime();//更新日志文件里的时间
     logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"Adv2已完成。"<<endl;
     /*****************升级1结束*****************/

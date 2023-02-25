@@ -969,7 +969,12 @@ void advCheck(int i,ofstream &fout)//检查第i段路径连接上伪基站的情
 {
     int startTime=terminalMovement[i].startTime;
     int endTime;
-    if(i==terminalMovement.size()-1)endTime=1140;
+    if(i==terminalMovement.size()-1)
+    {
+        endTime=terminalMovement[i].startTime+distanceBetween(terminalMovement[i].xs,terminalMovement[i].ys,terminalMovement[i].xe,terminalMovement[i].ye)/(50.0*terminalMovement[i].velocity/3.0);
+        // cout<<endTime<<endl;
+        // cout<<"="<<terminalMovement[i].startTime<<"+"<<distanceBetween(terminalMovement[i].xs,terminalMovement[i].ys,terminalMovement[i].xe,terminalMovement[i].ye)<<"m / 50.0*"<<terminalMovement[i].velocity<<"/3.0 m/min"<<endl;
+    }
     else endTime=terminalMovement[i+1].startTime;//结束时间为下一段路径的开始时间，最后一次是19:00(1140)
     long double leftEntryTime=0;
     long double rightEntryTime=0;
@@ -993,7 +998,7 @@ void advCheck(int i,ofstream &fout)//检查第i段路径连接上伪基站的情
         {
             rightExitTime=globalMapTime;
             leftExitTime=globalMapTime-(1.0/60);
-            isIn=false;
+            // isIn=false;
             // cout<<leftEntryTime<<endl;
             // cout<<rightEntryTime<<endl;
             // cout<<"---"<<endl;
@@ -1001,6 +1006,11 @@ void advCheck(int i,ofstream &fout)//检查第i段路径连接上伪基站的情
             // cout<<rightExitTime<<endl;
             break;
         }
+    }
+    if(isIn==false)
+    {
+        fout<<"该段路径上未连接到伪基站(忽略了连接时间小于1s的伪基站)"<<endl;
+        return;
     }
     long double midEntryTime=0;
     fout<<"研究连接上伪基站的精确时间"<<endl;
@@ -1424,27 +1434,27 @@ void ext1Process_2(int i)//扩展1，备用
     ext1out<<"完成"<<endl;
     return;
 }
-void ext2Process()//扩展2过程
+void ext2Process(int i1,int i2)//扩展2过程
 {
-    ext2out<<"分析第3段移动轨迹"<<endl;
-    ext2Route(3);
+    ext2out<<"分析第"<<i1<<"段移动轨迹"<<endl;
+    ext2Route(i1);
     ext2out<<endl;
-    ext2out<<"分析第6段移动轨迹"<<endl;
-    ext2Route(6);
+    ext2out<<"分析第"<<i2<<"段移动轨迹"<<endl;
+    ext2Route(i2);
     ext2out<<"完成"<<endl;
     return;
 }
-void adv1Process()//升级1过程
+void adv1Process(int i)//升级1过程
 {
-    adv1out<<"正在检查第12段移动轨迹"<<endl;
-    advCheck(12,adv1out);
+    adv1out<<"正在检查第"<<i<<"段移动轨迹"<<endl;
+    advCheck(i,adv1out);
     adv1out<<"完成"<<endl;
     return;
 }
-void adv2Process()//升级2过程
+void adv2Process(int i)//升级2过程
 {
-    adv2out<<"正在检查第9段移动轨迹"<<endl;
-    advCheck(9,adv2out);
+    adv2out<<"正在检查第"<<i<<"段移动轨迹"<<endl;
+    advCheck(i,adv2out);
     adv2out<<"完成"<<endl;
     return;
 }

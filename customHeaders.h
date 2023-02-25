@@ -139,7 +139,7 @@ void task4Process();//任务4:类似任务3
 void task5Process();//任务5过程
 // void ext1Process(int i);//扩展1过程
 void ext1Process_2(int i);//扩展1，备用
-void ext2Process();//扩展2过程
-void adv1Process();//升级1过程
-void adv2Process();//升级2过程
+void ext2Process(int i1,int i2);//扩展2过程
+void adv1Process(int i);//升级1过程
+void adv2Process(int i);//升级2过程
 void miscProcess();//杂项
