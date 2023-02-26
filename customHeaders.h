@@ -6,9 +6,13 @@
 #include<cmath>
 #include<cstdio>
 #include<cstdlib>
+#include<cstring>
 #include<vector>
 #include<ctime>
-
+#ifdef _MSC_VER
+#  include <nmmintrin.h>
+#  define __builtin_popcount _mm_popcnt_u64
+#endif
 //宏定义
 #define BORDER_EXP 17//地图尺寸指数
 #define MAX_UNIT_NUMS (int)9//单分块最大基站数，在等级不超过下方MAX_LEVEL的情况下

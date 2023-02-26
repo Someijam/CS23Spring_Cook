@@ -205,10 +205,9 @@ void FakeSt::getCurrentPosition(long double time,double &x,double &y)//方法，
 //通用工具函数(需声明)
 bool isInVector(vector<int> &vec,int a)//待改进为模版函数，查找元素a是否在vec中
 {
-    vector<int>::iterator i;
-    for(i=vec.begin();i!=vec.end();++i)//这里要改成++i
+    for(auto i=vec.begin();i!=vec.end();++i)//这里要改成++i
     {
-        if(*i.base()==a)return true;
+        if(*i==a)return true;
     }
     return false;
 }
