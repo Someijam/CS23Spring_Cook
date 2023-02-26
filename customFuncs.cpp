@@ -196,6 +196,18 @@ void FakeSt::getCurrentPosition(long double time,double &x,double &y)//方法，
     double sinTheta=(this->ye-this->ys)/sqrt(pow(this->xe-this->xs,2)+pow(this->ye-this->ys,2));
     double cosTheta=(this->xe-this->xs)/sqrt(pow(this->xe-this->xs,2)+pow(this->ye-this->ys,2));
     double r=50*(this->velocity)*(time-this->startTime)/3.0;
+    if(r<0)
+    {
+        x=-10000;
+        y=-10000;
+        return;
+    }
+    if(r>distanceBetween(this->xs,this->ys,this->xe,this->ye))
+    {
+        x=-10000;
+        y=-10000;
+        return;
+    }
     // logout<<"r="<<r<<endl;
     x=this->xs+r*cosTheta;
     y=this->ys+r*sinTheta;
@@ -727,8 +739,12 @@ int indexOfFakeStationNearBy(long double time,double x,double y)//给出当前�
         double fakeX;
         double fakeY;
         fakeStationMovement[i].getCurrentPosition(time,fakeX,fakeY);//更新伪基站坐标
-        // printDoubleMinToTime(time,logout);
-        // logout<<" Term Position=("<<x<<","<<y<<")"<<"\t FakeSt#"<<fakeStationMovement[i].no<<" Position=("<<fakeX<<","<<fakeY<<")\t Distance="<<distanceBetween(x,y,fakeX,fakeY)<<endl;
+        //Debug
+        // if(i==5)
+        // {
+        //     printDoubleMinToTime(time,logout);
+        //     logout<<" Term Position=("<<x<<","<<y<<")"<<"\t FakeSt#"<<fakeStationMovement[i].no<<" Position=("<<fakeX<<","<<fakeY<<")\t Distance="<<distanceBetween(x,y,fakeX,fakeY)<<endl;
+        // }//End Debug
         if(distanceBetween(x,y,fakeX,fakeY)<=nearestDistance)
         {
             nearestDistance=distanceBetween(x,y,fakeX,fakeY);
