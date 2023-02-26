@@ -13,3 +13,6 @@ hints/
 hints/*
 #ignore .sh
 debug.sh
+#ignore crypto
+*.key
+*.pub

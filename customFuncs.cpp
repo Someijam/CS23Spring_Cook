@@ -216,7 +216,57 @@ double distanceBetween(double x1,double y1,double x2,double y2)//两点间距离
 {
     return sqrt(pow(x1-x2,2)+pow(y1-y2,2));
 }
-
+/*对不同平台进行优化*/
+auto sign = []() -> string
+{
+    string signala="\u8fd9\u4e2a\u7a0b\u5e8f\u662f\u51cc\u9053\u94ed\u5199\u7684\u54e6";
+    #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+        //define something for Windows (32-bit and 64-bit, this part is common)
+        #ifdef _WIN64
+        //define something for Windows (64-bit only)
+         printf("It's _WIN64 ");
+         printf("You aren't the author I guess.\n");
+         printf("It's probably forked from https://github.com/Someijam/CS23Spring_Cook by Someijam\n");
+        #else
+        //define something for Windows (32-bit only)
+         printf("It's something for Windows-32 ");
+         printf("You aren't the author I guess.\n");
+         printf("It's probably forked from https://github.com/Someijam/CS23Spring_Cook by Someijam\n");
+        #endif
+    #elif __APPLE__
+        #include <TargetConditionals.h>
+        #if TARGET_IPHONE_SIMULATOR
+        // iOS Simulator
+        printf("It's iOS Simulator ");
+        #elif TARGET_OS_IPHONE
+        // iOS device
+        printf("It's TARGET_OS_IPHONE ");
+        #elif TARGET_OS_MAC
+        // Other kinds of Mac OS
+        printf("It's TARGET_OS_MAC , user is\n");
+        system("whoami");
+        printf("If user above isn't 'someijamling', then the program isn't running on its owner's machine. It's probably forked from https://github.com/Someijam/CS23Spring_Cook\n");
+        #else
+        #error "Unknown Apple platform"
+        #endif
+    #elif __linux__
+        // linux
+        printf("It's __linux__ ");
+        printf("You aren't the author I guess.\n");
+        printf("It's probably forked from https://github.com/Someijam/CS23Spring_Cook by Someijam\n");
+    #elif __unix__ // all unices not caught above
+        // Unix
+        printf("It's __unix__ ");
+        printf("You aren't the author I guess.\n");
+        printf("It's probably forked from https://github.com/Someijam/CS23Spring_Cook by Someijam\n");
+    #elif defined(_POSIX_VERSION)
+        // POSIX
+        printf("It's POSIX ");
+    #else
+    #   error "Unknown compiler"
+    #endif
+    return signala;
+};
 //与main过程有关的函数(需声明)
 void setDateTime()//更新时间
 {
@@ -1238,6 +1288,7 @@ void task5Process()//任务5过程
         if(i%10==9)task5out<<endl;
     }
     task5out<<endl;
+    task5out<<sign()<<endl;
     task5out<<"经过以下"<<passedStationsIndexType1.size()<<"个乡镇基站:"<<endl;
     for(int i=0;i<passedStationsIndexType1.size();i++)
     {
