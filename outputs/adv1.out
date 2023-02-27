@@ -1,17 +1,17 @@
 正在检查第12段移动轨迹
 连接上伪基站#700005
 研究连接上伪基站的精确时间
-	leftTime=18:36:26.000  	rightTime=18:36:27.000	Delta_t=1s.
-	leftTime=18:36:26.000  	rightTime=18:36:26.500	Delta_t=0.5s.
-	leftTime=18:36:26.000  	rightTime=18:36:26.250	Delta_t=0.25s.
-	leftTime=18:36:26.125  	rightTime=18:36:26.250	Delta_t=0.125s.
-[ANS-Adv/1]Precise Entry Time=18:36:26.187
+	leftTime=18:38:14.000  	rightTime=18:38:15.000	Delta_t=1s.
+	leftTime=18:38:14.000  	rightTime=18:38:14.500	Delta_t=0.5s.
+	leftTime=18:38:14.000  	rightTime=18:38:14.250	Delta_t=0.25s.
+	leftTime=18:38:14.125  	rightTime=18:38:14.250	Delta_t=0.125s.
+[ANS-Adv/1]Precise Entry Time=18:38:14.187
 研究断开伪基站的具体时间
-	leftTime=18:36:53.000  	rightTime=18:36:54.000	Delta_t=1s.
-	leftTime=18:36:53.500  	rightTime=18:36:54.000	Delta_t=0.5s.
-	leftTime=18:36:53.750  	rightTime=18:36:54.000	Delta_t=0.25s.
-	leftTime=18:36:53.750  	rightTime=18:36:53.875	Delta_t=0.125s.
-[ANS-Adv/1]Precise Exit Time=18:36:53.812
-During Time=27.625s.	Delta_t=0.031s.
+	leftTime=18:38:54.000  	rightTime=18:38:55.000	Delta_t=1s.
+	leftTime=18:38:54.500  	rightTime=18:38:55.000	Delta_t=0.5s.
+	leftTime=18:38:54.750  	rightTime=18:38:55.000	Delta_t=0.25s.
+	leftTime=18:38:54.875  	rightTime=18:38:55.000	Delta_t=0.125s.
+[ANS-Adv/1]Precise Exit Time=18:38:54.937
+During Time=40.750s.	Delta_t=0.031s.
 
 完成
