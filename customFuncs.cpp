@@ -930,8 +930,6 @@ void ext2Route(int i)//扩展2过程i
     if(i==terminalMovement.size()-1)
     {
         endTime=terminalMovement[i].startTime+distanceBetween(terminalMovement[i].xs,terminalMovement[i].ys,terminalMovement[i].xe,terminalMovement[i].ye)/(50.0*terminalMovement[i].velocity/3.0);
-        // cout<<endTime<<endl;
-        // cout<<"="<<terminalMovement[i].startTime<<"+"<<distanceBetween(terminalMovement[i].xs,terminalMovement[i].ys,terminalMovement[i].xe,terminalMovement[i].ye)<<"m / 50.0*"<<terminalMovement[i].velocity<<"/3.0 m/min"<<endl;
     }
     else endTime=terminalMovement[i+1].startTime;//结束时间为下一段路径的开始时间，最后一次是19:00(1140)
     double presentX=terminalMovement[i].xs;
@@ -941,12 +939,6 @@ void ext2Route(int i)//扩展2过程i
     long double leftExitTime=0;
     long double rightExitTime=0;//二分法的四个时间
     bool entried=false;
-    //Debug
-    // if(i==4)
-    // {
-    //     logout<<"Starts at:"<<terminalMovement[i].startTime<<endl;
-    // }
-    //Debug end
     int firstStIndex=0;
     int secondStIndex=0;
     for(long double globalMapTime=terminalMovement[i].startTime;globalMapTime<=endTime;globalMapTime+=(1.0/60))//分度值，这个循环踩初始时间范围
@@ -954,13 +946,6 @@ void ext2Route(int i)//扩展2过程i
         getCurrentPosition(globalMapTime,i,presentX,presentY);//当前时间的坐标已经存入presentX presentY
         vector<int> routeNo3Collection;
         stationsNearBy(routeNo3Collection,presentX,presentY);
-        //Debug
-        // if(i==3)
-        // {
-        //     printDoubleMinToTime(globalMapTime,logout);
-        //     logout<<" size="<<routeNo3Collection.size()<<endl;
-        // }
-        //Debug end
         if(routeNo3Collection.size()==0)//一开始就没信号
         {
             ext2out<<"开始阶段无信号或者一直仅可接收到一个基站的信号，因此无法确定重叠区域，跳过计算"<<endl;
@@ -993,6 +978,7 @@ void ext2Route(int i)//扩展2过程i
             break;
         }
     }
+    
     long double midEntryTime=0;
     while(rightEntryTime-leftEntryTime>=1.0/600)//进入阶段二分
     {
@@ -1049,6 +1035,104 @@ void ext2Route(int i)//扩展2过程i
     ext2out<<endl;
     ext2out<<"During Time="<<60*(midExitTime-midEntryTime)<<"s.";
     ext2out<<"\tDelta_t=(+/-)"<<30*(rightExitTime-leftExitTime)<<"s."<<endl;
+    return;
+}
+void ext2Route_2(int i)//扩展2备用函数
+{
+    int endTime;
+    if(i==terminalMovement.size()-1)
+    {
+        endTime=terminalMovement[i].startTime+distanceBetween(terminalMovement[i].xs,terminalMovement[i].ys,terminalMovement[i].xe,terminalMovement[i].ye)/(50.0*terminalMovement[i].velocity/3.0);
+    }
+    else endTime=terminalMovement[i+1].startTime;//结束时间为下一段路径的开始时间，最后一次是19:00(1140)
+
+    double presentX=terminalMovement[i].xs;
+    double presentY=terminalMovement[i].ys;//设置好起始坐标
+
+    long double leftEntryTime=0;
+    long double rightEntryTime=0;
+    long double leftExitTime=0;
+    long double rightExitTime=0;//二分法的四个时间
+    long double exactInTime=0;
+
+    int station1Index=0;
+    int station2Index=0;//稍后研究这两个基站的重叠区
+    bool entried=false;
+
+    for(long double globalMapTime=terminalMovement[i].startTime;globalMapTime<=endTime;globalMapTime+=(1.0/60))//分度值，这个循环踩要研究的两个基站
+    {
+        getCurrentPosition(globalMapTime,i,presentX,presentY);//当前时间的终端坐标已经存入presentX presentY
+        vector<int> Collection;
+        stationsNearBy(Collection,presentX,presentY);
+        // logout<<"Route No."<<i<<" nearby stations:";
+        // for(int _i=0;_i<Collection.size();_i++)ext2out<<"#"<<Stations[Collection[_i]].no<<" ";
+        // logout<<endl;
+        if(Collection.size()==1)station1Index=Collection[0];
+        if(Collection.size()==2&&station1Index!=0)
+        {
+            station1Index=Collection[0];
+            station2Index=Collection[1];//两个基站已经找到了
+            exactInTime=globalMapTime;
+            break;
+        }
+        if(Collection.size()==0)station1Index=0;
+    }
+    if(station1Index==0||station2Index==0)
+    {
+        ext2out<<"该段路径不存在重叠区"<<endl;
+    }
+    ext2out<<"研究:基站#"<<Stations[station1Index].no<<"和#"<<Stations[station2Index].no<<"的重叠区域"<<endl;
+    //二分进入:开始条件l=startTime,r=exactInTime
+    leftEntryTime=terminalMovement[i].startTime;
+    rightEntryTime=exactInTime;
+    long double midEntryTime=0;
+    ext2out<<"进入重叠区域阶段"<<endl;
+    while(rightEntryTime-leftEntryTime>(1.0/600))
+    {
+        ext2out<<"\tleftTime=";
+        printDoubleMinToTime(leftEntryTime,ext2out);
+        ext2out<<"\t rightTime=";
+        printDoubleMinToTime(rightEntryTime,ext2out);
+        ext2out<<" \tDelta_t="<<60*(rightEntryTime-leftEntryTime)<<"s."<<endl;
+
+        midEntryTime=(leftEntryTime+rightEntryTime)/2.0;
+        double termX=0;
+        double termY=0;
+        getCurrentPosition(midEntryTime,i,termX,termY);
+        bool inStation1=distanceFromSttoPoint(Stations[station1Index],termX,termY)<Stations[station1Index].validDistance();
+        bool inStation2=distanceFromSttoPoint(Stations[station2Index],termX,termY)<Stations[station2Index].validDistance();
+        if(inStation1&&inStation2)rightEntryTime=midEntryTime;//进了重叠区
+        else leftEntryTime=midEntryTime;//没进重叠区
+    }
+    //二分离开:开始条件l=exactInTime,r=endTime
+    leftExitTime=exactInTime;
+    rightExitTime=endTime;
+    long double midExitTime=0;
+    ext2out<<"离开重叠区域阶段"<<endl;
+    while (rightExitTime-leftExitTime>(1.0/600))
+    {
+        ext2out<<"\tleftTime=";
+        printDoubleMinToTime(leftExitTime,ext2out);
+        ext2out<<"\t rightTime=";
+        printDoubleMinToTime(rightExitTime,ext2out);
+        ext2out<<" \tDelta_t="<<60*(rightExitTime-leftExitTime)<<"s."<<endl;
+
+        midExitTime=(leftExitTime+rightExitTime)/2.0;
+        double termX=0;
+        double termY=0;
+        getCurrentPosition(midExitTime,i,termX,termY);
+        bool inStation1=distanceFromSttoPoint(Stations[station1Index],termX,termY)<Stations[station1Index].validDistance();
+        bool inStation2=distanceFromSttoPoint(Stations[station2Index],termX,termY)<Stations[station2Index].validDistance();
+        if(inStation1&&inStation2)leftExitTime=midExitTime;//还在重叠区
+        else rightExitTime=midExitTime;//离开重叠区
+    }
+    //输出结果
+    ext2out<<"Precise Entry Time=";
+    printDoubleMinToTime(midEntryTime,ext2out);
+    ext2out<<"\t Precise Exit Time=";
+    printDoubleMinToTime(midExitTime,ext2out);
+    ext2out<<endl;
+    ext2out<<"[ANS-Ext/2]Duration Time="<<60*(midExitTime-midEntryTime)<<"s."<<endl;
     return;
 }
 void advCheck(int i,ofstream &fout)//检查第i段路径连接上伪基站的情况，包含二分
@@ -1554,10 +1638,10 @@ void ext1Process_2(int i)//扩展1，备用
 void ext2Process(int i1,int i2)//扩展2过程
 {
     ext2out<<"分析第"<<i1<<"段移动轨迹"<<endl;
-    ext2Route(i1);
+    ext2Route_2(i1);
     ext2out<<endl;
     ext2out<<"分析第"<<i2<<"段移动轨迹"<<endl;
-    ext2Route(i2);
+    ext2Route_2(i2);
     ext2out<<"完成"<<endl;
     return;
 }

@@ -1,30 +1,68 @@
 分析第3段移动轨迹
-此重叠区开始时同时收取到2个基站信号:#5784 #52328 
-考察#5784 和#8508的重叠部分
-	leftTime=11:59:59.000  	rightTime=12:00:00.000	Delta_t=1s.
-	leftTime=11:59:59.000  	rightTime=11:59:59.500	Delta_t=0.5s.
-	leftTime=11:59:59.000  	rightTime=11:59:59.250	Delta_t=0.25s.
-	leftTime=11:59:59.000  	rightTime=11:59:59.125	Delta_t=0.125s.
-[ANS-Ext/2]Precise Entry Time=11:59:59.062
-	leftTime=12:03:03.000  	rightTime=12:03:04.000	Delta_t=1s.
-	leftTime=12:03:03.500  	rightTime=12:03:04.000	Delta_t=0.5s.
-	leftTime=12:03:03.750  	rightTime=12:03:04.000	Delta_t=0.25s.
-	leftTime=12:03:03.875  	rightTime=12:03:04.000	Delta_t=0.125s.
-[ANS-Ext/2]Precise Exit Time=12:03:03.937
-During Time=184.875s.	Delta_t=(+/-)0.031s.
+研究:基站#5784和#5783的重叠区域
+进入重叠区域阶段
+	leftTime=12:00:00.000	 rightTime=12:07:010.000 	Delta_t=430.000s.
+	leftTime=12:03:35.000	 rightTime=12:07:010.000 	Delta_t=215.000s.
+	leftTime=12:05:22.500	 rightTime=12:07:010.000 	Delta_t=107.500s.
+	leftTime=12:06:16.250	 rightTime=12:07:010.000 	Delta_t=53.750s.
+	leftTime=12:06:43.125	 rightTime=12:07:010.000 	Delta_t=26.875s.
+	leftTime=12:06:56.562	 rightTime=12:07:010.000 	Delta_t=13.437s.
+	leftTime=12:07:03.281	 rightTime=12:07:010.000 	Delta_t=6.719s.
+	leftTime=12:07:06.641	 rightTime=12:07:010.000 	Delta_t=3.359s.
+	leftTime=12:07:08.320	 rightTime=12:07:010.000 	Delta_t=1.680s.
+	leftTime=12:07:09.160	 rightTime=12:07:010.000 	Delta_t=0.840s.
+	leftTime=12:07:09.580	 rightTime=12:07:010.000 	Delta_t=0.420s.
+	leftTime=12:07:09.790	 rightTime=12:07:010.000 	Delta_t=0.210s.
+	leftTime=12:07:09.895	 rightTime=12:07:010.000 	Delta_t=0.105s.
+离开重叠区域阶段
+	leftTime=12:07:010.000	 rightTime=14:30:00.000 	Delta_t=8570.000s.
+	leftTime=12:07:010.000	 rightTime=13:18:35.000 	Delta_t=4285.000s.
+	leftTime=12:07:010.000	 rightTime=12:42:52.500 	Delta_t=2142.500s.
+	leftTime=12:07:010.000	 rightTime=12:25:01.250 	Delta_t=1071.250s.
+	leftTime=12:07:010.000	 rightTime=12:16:05.625 	Delta_t=535.625s.
+	leftTime=12:07:010.000	 rightTime=12:11:37.812 	Delta_t=267.813s.
+	leftTime=12:07:010.000	 rightTime=12:09:23.906 	Delta_t=133.906s.
+	leftTime=12:07:010.000	 rightTime=12:08:16.953 	Delta_t=66.953s.
+	leftTime=12:07:010.000	 rightTime=12:07:43.477 	Delta_t=33.477s.
+	leftTime=12:07:010.000	 rightTime=12:07:26.738 	Delta_t=16.738s.
+	leftTime=12:07:010.000	 rightTime=12:07:18.369 	Delta_t=8.369s.
+	leftTime=12:07:14.185	 rightTime=12:07:18.369 	Delta_t=4.185s.
+	leftTime=12:07:14.185	 rightTime=12:07:16.277 	Delta_t=2.092s.
+	leftTime=12:07:14.185	 rightTime=12:07:15.231 	Delta_t=1.046s.
+	leftTime=12:07:14.708	 rightTime=12:07:15.231 	Delta_t=0.523s.
+	leftTime=12:07:14.969	 rightTime=12:07:15.231 	Delta_t=0.262s.
+	leftTime=12:07:15.100	 rightTime=12:07:15.231 	Delta_t=0.131s.
+Precise Entry Time=12:07:09.948	 Precise Exit Time=12:07:15.165
+[ANS-Ext/2]Duration Time=5.218s.
 
 分析第6段移动轨迹
-此重叠区开始时同时收取到2个基站信号:#7336 #7337 
-考察#7336 和#7337的重叠部分
-	leftTime=15:13:28.000  	rightTime=15:13:29.000	Delta_t=1s.
-	leftTime=15:13:28.000  	rightTime=15:13:28.500	Delta_t=0.5s.
-	leftTime=15:13:28.000  	rightTime=15:13:28.250	Delta_t=0.25s.
-	leftTime=15:13:28.000  	rightTime=15:13:28.125	Delta_t=0.125s.
-[ANS-Ext/2]Precise Entry Time=15:13:28.062
-	leftTime=15:13:55.000  	rightTime=15:13:56.000	Delta_t=1s.
-	leftTime=15:13:55.000  	rightTime=15:13:55.500	Delta_t=0.5s.
-	leftTime=15:13:55.000  	rightTime=15:13:55.250	Delta_t=0.25s.
-	leftTime=15:13:55.125  	rightTime=15:13:55.250	Delta_t=0.125s.
-[ANS-Ext/2]Precise Exit Time=15:13:55.187
-During Time=27.125s.	Delta_t=(+/-)0.031s.
+研究:基站#7336和#7337的重叠区域
+进入重叠区域阶段
+	leftTime=15:10:00.000	 rightTime=15:13:29.000 	Delta_t=209.000s.
+	leftTime=15:11:44.500	 rightTime=15:13:29.000 	Delta_t=104.500s.
+	leftTime=15:12:36.750	 rightTime=15:13:29.000 	Delta_t=52.250s.
+	leftTime=15:13:02.875	 rightTime=15:13:29.000 	Delta_t=26.125s.
+	leftTime=15:13:15.937	 rightTime=15:13:29.000 	Delta_t=13.062s.
+	leftTime=15:13:22.469	 rightTime=15:13:29.000 	Delta_t=6.531s.
+	leftTime=15:13:25.734	 rightTime=15:13:29.000 	Delta_t=3.266s.
+	leftTime=15:13:27.367	 rightTime=15:13:29.000 	Delta_t=1.633s.
+	leftTime=15:13:27.367	 rightTime=15:13:28.184 	Delta_t=0.816s.
+	leftTime=15:13:27.775	 rightTime=15:13:28.184 	Delta_t=0.408s.
+	leftTime=15:13:27.979	 rightTime=15:13:28.184 	Delta_t=0.204s.
+	leftTime=15:13:27.979	 rightTime=15:13:28.082 	Delta_t=0.102s.
+离开重叠区域阶段
+	leftTime=15:13:29.000	 rightTime=15:20:00.000 	Delta_t=391.000s.
+	leftTime=15:13:29.000	 rightTime=15:16:44.500 	Delta_t=195.500s.
+	leftTime=15:13:29.000	 rightTime=15:15:06.750 	Delta_t=97.750s.
+	leftTime=15:13:29.000	 rightTime=15:14:17.875 	Delta_t=48.875s.
+	leftTime=15:13:53.437	 rightTime=15:14:17.875 	Delta_t=24.438s.
+	leftTime=15:13:53.437	 rightTime=15:14:05.656 	Delta_t=12.219s.
+	leftTime=15:13:53.437	 rightTime=15:13:59.547 	Delta_t=6.109s.
+	leftTime=15:13:53.437	 rightTime=15:13:56.492 	Delta_t=3.055s.
+	leftTime=15:13:54.965	 rightTime=15:13:56.492 	Delta_t=1.527s.
+	leftTime=15:13:54.965	 rightTime=15:13:55.729 	Delta_t=0.764s.
+	leftTime=15:13:54.965	 rightTime=15:13:55.347 	Delta_t=0.382s.
+	leftTime=15:13:55.156	 rightTime=15:13:55.347 	Delta_t=0.191s.
+Precise Entry Time=15:13:28.031	 Precise Exit Time=15:13:55.251
+[ANS-Ext/2]Duration Time=27.221s.
 完成
