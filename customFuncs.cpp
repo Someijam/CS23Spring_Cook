@@ -1200,13 +1200,19 @@ void task3Process()//任务3:给定3个坐标，找到要求的基站
         int strongestStationIndex=nearbyStationsIndex[0];
         for(int j=0;j<nearbyStationsIndex.size();j++)
         {
-            if(currentPointSignalStrength(Stations[strongestStationIndex],testx3[i],testy3[i])<currentPointSignalStrength(Stations[nearbyStationsIndex[j]],testx3[i],testy3[i]))strongestStationIndex=nearbyStationsIndex[i];
+            if(currentPointSignalStrength(Stations[strongestStationIndex],testx3[i],testy3[i])<currentPointSignalStrength(Stations[nearbyStationsIndex[j]],testx3[i],testy3[i]))strongestStationIndex=nearbyStationsIndex[j];
         }
         task3out<<"的最优信号基站为:\t编号#"<<Stations[strongestStationIndex].no<<"\t基站位置:("<<Stations[strongestStationIndex].x<<","<<Stations[strongestStationIndex].y<<")"<<"\t类型:"<<Stations[strongestStationIndex].typeName<<"\t距离:"<<distanceFromSttoPoint(Stations[strongestStationIndex],testx3[i],testy3[i])<<"\t相对强度:"<<currentPointSignalStrength(Stations[strongestStationIndex],testx3[i],testy3[i])<<endl;
         task3out<<"附近所有的基站:";
+        //Debug
+            task3out<<endl;
+        //Debug End
         for(int j=0;j<nearbyStationsIndex.size();j++)
         {
-            task3out<<Stations[nearbyStationsIndex[j]].no<<" ";
+            // task3out<<Stations[nearbyStationsIndex[j]].no<<" ";
+            //Debug
+            task3out<<"\t编号#"<<Stations[nearbyStationsIndex[j]].no<<"\t基站位置:("<<Stations[nearbyStationsIndex[j]].x<<","<<Stations[nearbyStationsIndex[j]].y<<")"<<"\t类型:"<<Stations[nearbyStationsIndex[j]].typeName<<"\t距离:"<<distanceFromSttoPoint(Stations[nearbyStationsIndex[j]],testx3[i],testy3[i])<<"\t相对强度:"<<currentPointSignalStrength(Stations[nearbyStationsIndex[j]],testx3[i],testy3[i])<<endl;
+            //Debug End
         }
         task3out<<endl;
     }
