@@ -8,10 +8,10 @@
 [ANS-Ext/2]Precise Entry Time=11:59:59.062
 	leftTime=12:03:03.000  	rightTime=12:03:04.000	Delta_t=1s.
 	leftTime=12:03:03.500  	rightTime=12:03:04.000	Delta_t=0.5s.
-	leftTime=12:03:03.500  	rightTime=12:03:03.750	Delta_t=0.25s.
-	leftTime=12:03:03.500  	rightTime=12:03:03.625	Delta_t=0.125s.
-[ANS-Ext/2]Precise Exit Time=12:03:03.562
-During Time=184.500s.	Delta_t=(+/-)0.031s.
+	leftTime=12:03:03.750  	rightTime=12:03:04.000	Delta_t=0.25s.
+	leftTime=12:03:03.875  	rightTime=12:03:04.000	Delta_t=0.125s.
+[ANS-Ext/2]Precise Exit Time=12:03:03.937
+During Time=184.875s.	Delta_t=(+/-)0.031s.
 
 分析第6段移动轨迹
 此重叠区开始时同时收取到2个基站信号:#7336 #7337 
@@ -23,8 +23,8 @@ During Time=184.500s.	Delta_t=(+/-)0.031s.
 [ANS-Ext/2]Precise Entry Time=15:13:28.062
 	leftTime=15:13:55.000  	rightTime=15:13:56.000	Delta_t=1s.
 	leftTime=15:13:55.000  	rightTime=15:13:55.500	Delta_t=0.5s.
-	leftTime=15:13:55.250  	rightTime=15:13:55.500	Delta_t=0.25s.
-	leftTime=15:13:55.250  	rightTime=15:13:55.375	Delta_t=0.125s.
-[ANS-Ext/2]Precise Exit Time=15:13:55.312
-During Time=27.250s.	Delta_t=(+/-)0.031s.
+	leftTime=15:13:55.000  	rightTime=15:13:55.250	Delta_t=0.25s.
+	leftTime=15:13:55.125  	rightTime=15:13:55.250	Delta_t=0.125s.
+[ANS-Ext/2]Precise Exit Time=15:13:55.187
+During Time=27.125s.	Delta_t=(+/-)0.031s.
 完成

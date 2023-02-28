@@ -594,11 +594,11 @@ QuadTreeNode* positionInWhichChunk(int x,int y)//当前坐标的点在哪一个�
     }
     return currentChunk;
 }
-double distanceFromSttoPoint(Station st,int posx,int posy)//计算基站到考察点的距离
+double distanceFromSttoPoint(Station st,double posx,double posy)//计算基站到考察点的距离
 {
     return sqrt(pow(posx-st.x,2)+pow(posy-st.y,2));
 }
-double currentPointSignalStrength(Station st,int x,int y)//计算基站到当前点的相对强度
+double currentPointSignalStrength(Station st,double x,double y)//计算基站到当前点的相对强度
 {
     int R[3]={300,1000,5000};
     return st.baseStrength*pow((R[st.type]/distanceFromSttoPoint(st,x,y)),2);
@@ -692,7 +692,7 @@ void stationsNearBy(vector<int> &nearbyStationsIndex,int posx,int posy)//工具�
     }
     return;
 }
-int bestMatchStation(int x,int y)//工具函数，给定x,y返回最优基站在Stations中的索引
+int bestMatchStation(double x,double y)//工具函数，给定x,y返回最优基站在Stations中的索引
 {
     vector<int> nearbyStationsIndex;
     stationsNearBy(nearbyStationsIndex,x,y);
@@ -1286,6 +1286,16 @@ void task5Process()//任务5过程
         for(double globalMapTime=terminalMovement[i].startTime;globalMapTime<=endTime;globalMapTime+=(1.0/60))//分度值为1/60min(1s)
         {
             getCurrentPosition(globalMapTime,i,presentX,presentY);//当前时间的坐标已经存入presentX presentY
+            // if(i==8||i==9)
+            // {
+            //     printDoubleMinToTime(globalMapTime,logout);
+            //     logout<<" TermPos:("<<presentX<<","<<presentY<<")";
+            //     logout<<"\t Distance from #625(95016,28076)="<<distanceFromSttoPoint(Stations[625],presentX,presentY)<<"\tSignal="<<currentPointSignalStrength(Stations[625],presentX,presentY)<<endl;
+            //     logout<<"             TermPos:("<<presentX<<","<<presentY<<")";
+            //     logout<<"\t Distance from #7342(93776,25000)="<<distanceFromSttoPoint(Stations[7342],presentX,presentY)<<"\tSignal="<<currentPointSignalStrength(Stations[7342],presentX,presentY);
+            //     logout<<"\tSignal#625 > Signal#7342 ? "<<(currentPointSignalStrength(Stations[625],presentX,presentY)>currentPointSignalStrength(Stations[7342],presentX,presentY))<<endl;
+            //     logout<<endl;
+            // }
             int shouldConnectStationIndex=bestMatchStation(presentX,presentY);
             if(shouldConnectStationIndex==lastConnectedStationIndex)continue;//相同，不用切换
             //以下为输出
@@ -1559,6 +1569,7 @@ void adv2Process(int i)//升级2过程
 }
 void miscProcess()//杂项
 {
-    // cout<<indexOfFakeStationNearBy()
+    
     return;
 }
+// sqrt(5.66672**2*10**12-4*80279*(10**8-1600))/(80279)
