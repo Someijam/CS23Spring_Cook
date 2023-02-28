@@ -1058,8 +1058,6 @@ void advCheck(int i,ofstream &fout)//检查第i段路径连接上伪基站的情
     if(i==terminalMovement.size()-1)
     {
         endTime=terminalMovement[i].startTime+distanceBetween(terminalMovement[i].xs,terminalMovement[i].ys,terminalMovement[i].xe,terminalMovement[i].ye)/(50.0*terminalMovement[i].velocity/3.0);
-        // cout<<endTime<<endl;
-        // cout<<"="<<terminalMovement[i].startTime<<"+"<<distanceBetween(terminalMovement[i].xs,terminalMovement[i].ys,terminalMovement[i].xe,terminalMovement[i].ye)<<"m / 50.0*"<<terminalMovement[i].velocity<<"/3.0 m/min"<<endl;
     }
     else endTime=terminalMovement[i+1].startTime;//结束时间为下一段路径的开始时间，最后一次是19:00(1140)
     long double leftEntryTime=0;
@@ -1073,6 +1071,16 @@ void advCheck(int i,ofstream &fout)//检查第i段路径连接上伪基站的情
         double y;
         getCurrentPosition(globalMapTime,i,x,y);//更新坐标
         int connectedNo=indexOfFakeStationNearBy(globalMapTime,x,y);
+        //Debug
+        // if(i==9)
+        // {
+        //     double fakex;
+        //     double fakey;
+        //     fakeStationMovement[4].getCurrentPosition(globalMapTime,fakex,fakey);
+        //     printDoubleMinToTime(globalMapTime,logout);
+        //     logout<<" Discrete time="<<globalMapTime-16*60<<" Term Position=("<<x<<","<<y<<") \tFakeSt Position:("<<fakex<<","<<fakey<<") \t"<<"Distance="<<distanceBetween(x,y,fakex,fakey)<<endl;
+        // }
+        //Debug End
         if(connectedNo!=0&&isIn==false)//连上了，并且刚刚没连上
         {
             rightEntryTime=globalMapTime;
@@ -1569,7 +1577,6 @@ void adv2Process(int i)//升级2过程
 }
 void miscProcess()//杂项
 {
-    
+
     return;
 }
-// sqrt(5.66672**2*10**12-4*80279*(10**8-1600))/(80279)
