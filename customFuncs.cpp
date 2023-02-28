@@ -946,17 +946,19 @@ void ext2Route(int i)//扩展2过程i
     //     logout<<"Starts at:"<<terminalMovement[i].startTime<<endl;
     // }
     //Debug end
+    int firstStIndex=0;
+    int secondStIndex=0;
     for(long double globalMapTime=terminalMovement[i].startTime;globalMapTime<=endTime;globalMapTime+=(1.0/60))//分度值，这个循环踩初始时间范围
     {
         getCurrentPosition(globalMapTime,i,presentX,presentY);//当前时间的坐标已经存入presentX presentY
         vector<int> routeNo3Collection;
         stationsNearBy(routeNo3Collection,presentX,presentY);
         //Debug
-        // if(i==4)
-        // {
-        //     printDoubleMinToTime(globalMapTime,logout);
-        //     logout<<" size="<<routeNo3Collection.size()<<endl;
-        // }
+        if(i==3)
+        {
+            printDoubleMinToTime(globalMapTime,logout);
+            logout<<" size="<<routeNo3Collection.size()<<endl;
+        }
         //Debug end
         if(routeNo3Collection.size()==0)//一开始就没信号
         {
@@ -968,11 +970,16 @@ void ext2Route(int i)//扩展2过程i
             ext2out<<"此重叠区开始时同时收取到"<<routeNo3Collection.size()<<"个基站信号:";
             for(int j=0;j<routeNo3Collection.size();j++)ext2out<<"#"<<Stations[routeNo3Collection[j]].no<<" ";
             ext2out<<endl;
+            firstStIndex=routeNo3Collection[0];
+            secondStIndex=routeNo3Collection[1];
+            ext2out<<"考察#"<<firstStIndex<<" 和#"<<secondStIndex<<"的重叠部分"<<endl;
             rightEntryTime=globalMapTime;
             leftEntryTime=globalMapTime-(1.0/60);
             entried=true;
         }
-        if(routeNo3Collection.size()<=1&&entried==true)//退出重叠区
+        bool isFirstIn=(distanceFromSttoPoint(Stations[firstStIndex],presentX,presentY)<Stations[firstStIndex].validDistance());
+        bool isSecondIn=(distanceFromSttoPoint(Stations[secondStIndex],presentX,presentY)<Stations[secondStIndex].validDistance());
+        if((isFirstIn&&isSecondIn)==false&&entried==true)//(routeNo3Collection.size()<=1&&entried==true)//退出重叠区
         {
             rightExitTime=globalMapTime;
             leftExitTime=globalMapTime-(1.0/60);
@@ -1031,8 +1038,10 @@ void ext2Route(int i)//扩展2过程i
         getCurrentPosition(midExitTime,i,x,y);
         vector<int> routeNo3Collection;
         stationsNearBy(routeNo3Collection,x,y);
-        if(routeNo3Collection.size()<2)rightExitTime=midExitTime;//出去了
-        else if(routeNo3Collection.size()>=2)leftExitTime=midExitTime;//没出去
+        bool isFirstIn=(distanceFromSttoPoint(Stations[firstStIndex],x,y)<Stations[firstStIndex].validDistance());
+        bool isSecondIn=(distanceFromSttoPoint(Stations[secondStIndex],x,y)<Stations[secondStIndex].validDistance());
+        if((isFirstIn&&isSecondIn)==false)rightExitTime=midExitTime;//出去了 routeNo3Collection.size()<2
+        else leftExitTime=midExitTime;//没出去 if(routeNo3Collection.size()>=2)
     }
     ext2out<<"[ANS-Ext/2]Precise Exit Time=";
     printDoubleMinToTime(midExitTime,ext2out);

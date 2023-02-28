@@ -1,19 +1,21 @@
 分析第3段移动轨迹
 此重叠区开始时同时收取到2个基站信号:#5784 #52328 
+考察#5784 和#8508的重叠部分
 	leftTime=11:59:59.000  	rightTime=12:00:00.000	Delta_t=1s.
 	leftTime=11:59:59.000  	rightTime=11:59:59.500	Delta_t=0.5s.
 	leftTime=11:59:59.000  	rightTime=11:59:59.250	Delta_t=0.25s.
 	leftTime=11:59:59.000  	rightTime=11:59:59.125	Delta_t=0.125s.
 [ANS-Ext/2]Precise Entry Time=11:59:59.062
-	leftTime=12:06:22.000  	rightTime=12:06:23.000	Delta_t=1s.
-	leftTime=12:06:22.500  	rightTime=12:06:23.000	Delta_t=0.5s.
-	leftTime=12:06:22.500  	rightTime=12:06:22.750	Delta_t=0.25s.
-	leftTime=12:06:22.500  	rightTime=12:06:22.625	Delta_t=0.125s.
-[ANS-Ext/2]Precise Exit Time=12:06:22.562
-During Time=383.500s.	Delta_t=(+/-)0.031s.
+	leftTime=12:03:03.000  	rightTime=12:03:04.000	Delta_t=1s.
+	leftTime=12:03:03.500  	rightTime=12:03:04.000	Delta_t=0.5s.
+	leftTime=12:03:03.500  	rightTime=12:03:03.750	Delta_t=0.25s.
+	leftTime=12:03:03.500  	rightTime=12:03:03.625	Delta_t=0.125s.
+[ANS-Ext/2]Precise Exit Time=12:03:03.562
+During Time=184.500s.	Delta_t=(+/-)0.031s.
 
 分析第6段移动轨迹
 此重叠区开始时同时收取到2个基站信号:#7336 #7337 
+考察#7336 和#7337的重叠部分
 	leftTime=15:13:28.000  	rightTime=15:13:29.000	Delta_t=1s.
 	leftTime=15:13:28.000  	rightTime=15:13:28.500	Delta_t=0.5s.
 	leftTime=15:13:28.000  	rightTime=15:13:28.250	Delta_t=0.25s.
