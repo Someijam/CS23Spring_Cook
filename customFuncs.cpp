@@ -739,12 +739,13 @@ int indexOfFakeStationNearBy(long double time,double x,double y)//给出当前�
         double fakeX;
         double fakeY;
         fakeStationMovement[i].getCurrentPosition(time,fakeX,fakeY);//更新伪基站坐标
-        //Debug
+        // Debug
         // if(i==5)
         // {
         //     printDoubleMinToTime(time,logout);
         //     logout<<" Term Position=("<<x<<","<<y<<")"<<"\t FakeSt#"<<fakeStationMovement[i].no<<" Position=("<<fakeX<<","<<fakeY<<")\t Distance="<<distanceBetween(x,y,fakeX,fakeY)<<endl;
-        // }//End Debug
+        // }
+        //End Debug
         if(distanceBetween(x,y,fakeX,fakeY)<=nearestDistance)
         {
             nearestDistance=distanceBetween(x,y,fakeX,fakeY);
@@ -954,11 +955,11 @@ void ext2Route(int i)//扩展2过程i
         vector<int> routeNo3Collection;
         stationsNearBy(routeNo3Collection,presentX,presentY);
         //Debug
-        if(i==3)
-        {
-            printDoubleMinToTime(globalMapTime,logout);
-            logout<<" size="<<routeNo3Collection.size()<<endl;
-        }
+        // if(i==3)
+        // {
+        //     printDoubleMinToTime(globalMapTime,logout);
+        //     logout<<" size="<<routeNo3Collection.size()<<endl;
+        // }
         //Debug end
         if(routeNo3Collection.size()==0)//一开始就没信号
         {
