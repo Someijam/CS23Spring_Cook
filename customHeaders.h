@@ -99,13 +99,6 @@ extern int maxY;
 extern int minX;
 extern int minY;
 // extern int maxLevel;
-extern bool task1_2Finished;
-extern bool task1_3Finished;
-extern QuadTreeNode* NW_estChunk;//最西北角区块地址
-extern QuadTreeNode* SE_estChunk;//最东南角区块地址
-extern QuadTreeNode* SE_nwChunk;//东南角区块的西北小区块地址
-extern QuadTreeNode* tempNode;
-extern QuadTreeNode* tempThis;
 extern int testx3[3];
 extern int testy3[3];//任务3数据
 extern int testx4[3];

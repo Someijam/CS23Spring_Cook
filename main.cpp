@@ -21,13 +21,6 @@ int maxX;
 int maxY;
 int minX;
 int minY;
-bool task1_2Finished=false;
-bool task1_3Finished=false;
-QuadTreeNode* NW_estChunk;//最西北角区块地址
-QuadTreeNode* SE_estChunk;//最东南角区块地址
-QuadTreeNode* SE_nwChunk;//东南角区块的西北小区块地址
-QuadTreeNode* tempNode;
-QuadTreeNode* tempThis;
 int testx3[3]={101000,18291,85000};
 int testy3[3]={23500,26354,28000};//任务3数据
 int testx4[3]={3000,70000,100000};
