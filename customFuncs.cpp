@@ -922,7 +922,7 @@ void task1Process()
     task1out<<"[ANS-Main/1-2]西北角区块基站数据："<<endl;
     showVChunkStatons(minX,maxY,task1out);
     task1out<<"[ANS-Main/1-3]东南角区块基站数据："<<endl;
-    showVChunkStatons(maxX,minY,task1out);
+    showVChunkStatons(maxX-VCHUNK_HALFWIDTH,minY+VCHUNK_HALFWIDTH,task1out);
     task1out<<"完成。"<<endl;
     return;
 }
@@ -940,12 +940,12 @@ void task2Process()
     task2out<<endl;
     //最东南角的西北侧
     task2out<<"[ANS-Main/2-3]最东南角的西北侧有以下树叶区块:"<<endl;
-    showVChunkStatons(maxX-2*VCHUNK_HALFWIDTH,minY+2*VCHUNK_HALFWIDTH,task2out);
+    showVChunkStatons(maxX-3*VCHUNK_HALFWIDTH,minY+3*VCHUNK_HALFWIDTH,task2out);
     task2out<<"---"<<endl;
     task2out<<endl;
     //最东南角西北侧的再北侧
     task2out<<"[ANS-Main/2-4]最东南角西北侧的再北侧有以下树叶区块:"<<endl;
-    showVChunkStatons(maxX-2*VCHUNK_HALFWIDTH,minY+4*VCHUNK_HALFWIDTH,task2out);
+    showVChunkStatons(maxX-3*VCHUNK_HALFWIDTH,minY+5*VCHUNK_HALFWIDTH,task2out);
     task2out<<"完成"<<endl;
     return;
 }
