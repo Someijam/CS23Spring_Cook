@@ -8,6 +8,7 @@
 #include<cstdlib>
 #include<cstring>
 #include<vector>
+#include<queue>
 #include<ctime>
 #ifdef _MSC_VER
 #  include <nmmintrin.h>
@@ -72,7 +73,17 @@ struct FakeSt//伪基站路径
     int no;
     void getCurrentPosition(long double time,double &x,double &y);//方法，给定时间获取当前伪基站位置
 };
-
+struct Square//正方形区域
+{
+    int centerX;
+    int centerY;//中心坐标
+    int halfWidth;//宽度的一半
+    bool isLeafIntersectsMe(QuadTreeNode* leaf);//四叉树叶与我相交吗?
+    void collectLeavesInside(vector<QuadTreeNode*> &containerOfLeaves);//提供容器，收集与自己相交的四叉树叶
+    void collectStationsInside(vector<int> &containerOfStations);//提供容器，收集自己内部的所有基站
+    Square(int x,int y,int halfw);
+    Square();
+};
 //全局变量
 extern vector<Station> Stations;
 extern vector<int> ExpressWayStationsNo;

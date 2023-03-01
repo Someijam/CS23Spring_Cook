@@ -213,6 +213,59 @@ void FakeSt::getCurrentPosition(long double time,double &x,double &y)//方法，
     y=this->ys+r*sinTheta;
     return;
 }
+bool Square::isLeafIntersectsMe(QuadTreeNode* leaf)//四叉树叶与我相交吗?
+{
+    bool yIntersects=(abs(leaf->y-this->centerY)<(2*leaf->quarterWidth()+this->halfWidth));
+    bool xIntersects=(abs(leaf->x-this->centerX)<(2*leaf->quarterWidth()+this->halfWidth));
+    if(xIntersects&&yIntersects)return true;
+    else return false;
+}
+void Square::collectLeavesInside(vector<QuadTreeNode*> &containerOfLeaves)//提供容器，收集与自己相交的四叉树叶
+{
+    queue<QuadTreeNode*> traverseQueue;
+    traverseQueue.push(&MapRoot);//根节点入队
+    while(!traverseQueue.empty())
+    {
+        QuadTreeNode* leafHeadOut=traverseQueue.front();//记录并访问要冒出来的人
+        if(leafHeadOut->isLeaf&&this->isLeafIntersectsMe(leafHeadOut))containerOfLeaves.push_back(leafHeadOut);//是树叶并且相交，保存
+        if(!leafHeadOut->isLeaf)
+        {
+            for(int i=0;i<4;i++)
+            {
+                traverseQueue.push(leafHeadOut->children[i]);
+            }
+        }
+        traverseQueue.pop();
+    }
+    return;
+}
+void Square::collectStationsInside(vector<int> &containerOfStations)//提供容器，收集自己内部的所有基站索引
+{
+    vector<QuadTreeNode*> containerOfLeaves;
+    this->collectLeavesInside(containerOfLeaves);
+    for(int i=0;i<containerOfLeaves.size();i++)
+    {
+        for(int j=0;j<containerOfLeaves[i]->includedStationIndex.size();j++)
+        {
+            bool stxIsIncluded=(abs(Stations[containerOfLeaves[i]->includedStationIndex[j]].x-this->centerX)<this->halfWidth);
+            bool styIsIncluded=(abs(Stations[containerOfLeaves[i]->includedStationIndex[j]].y-this->centerY)<this->halfWidth);
+            if(stxIsIncluded&&styIsIncluded)containerOfStations.push_back(containerOfLeaves[i]->includedStationIndex[j]);//基站必须也在正方形内才可收集
+        }
+    }
+    return;
+}
+Square::Square(int x,int y,int w)//构造
+{
+    this->centerX=x;
+    this->centerY=y;
+    this->halfWidth=w;
+}
+Square::Square()//默认构造
+{
+    this->centerX=0;
+    this->centerY=0;
+    this->halfWidth=0;
+}
 
 //通用工具函数(需声明)
 bool isInVector(vector<int> &vec,int a)//待改进为模版函数，查找元素a是否在vec中
@@ -1661,6 +1714,10 @@ void adv2Process(int i)//升级2过程
 }
 void miscProcess()//杂项
 {
-
+    vector<int> includedSt;
+    Square square1(110000,0,10000);
+    square1.collectStationsInside(includedSt);
+    for(int i=0;i<includedSt.size();i++)cout<<Stations[includedSt[i]].no<<" x:"<<Stations[includedSt[i]].x<<" y:"<<Stations[includedSt[i]].y<<endl;
+    cout<<endl;
     return;
 }
