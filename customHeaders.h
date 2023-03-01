@@ -18,6 +18,7 @@
 #define BORDER_EXP 17//地图尺寸指数
 #define MAX_UNIT_NUMS (int)9//单分块最大基站数，在等级不超过下方MAX_LEVEL的情况下
 #define MAX_LEVEL 8//四叉树最深树叶的等级
+#define VCHUNK_HALFWIDTH 1000//虚拟分块宽度
 //名字空间
 using namespace std;
 
@@ -34,14 +35,14 @@ struct QuadTreeNode//四叉树结构
     vector<int> includedStationIndex;//此区域(节点)内所有基站 ！索引！ ，没有则size为0
     pair<int,int> prefix;//分别表示x和y方向的象限记录
     int quarterWidth();//该区块1/4边长
-    QuadTreeNode* northNode();//北侧区块
-    QuadTreeNode* southNode();//南侧区块
-    QuadTreeNode* eastNode();//东侧区块
-    QuadTreeNode* westNode();//西侧区块
-    QuadTreeNode* nwNode();//西北区块
-    QuadTreeNode* neNode();//东北区块
-    QuadTreeNode* swNode();//西南区块
-    QuadTreeNode* seNode();//东南区块
+    // QuadTreeNode* northNode();//北侧区块
+    // QuadTreeNode* southNode();//南侧区块
+    // QuadTreeNode* eastNode();//东侧区块
+    // QuadTreeNode* westNode();//西侧区块
+    // QuadTreeNode* nwNode();//西北区块
+    // QuadTreeNode* neNode();//东北区块
+    // QuadTreeNode* swNode();//西南区块
+    // QuadTreeNode* seNode();//东南区块
 };
 struct Station//基站信息
 {
@@ -93,6 +94,10 @@ extern char* presentDateTime;
 extern tm* ltm;
 extern string fDate;
 extern string fTime;
+extern int maxX;
+extern int maxY;
+extern int minX;
+extern int minY;
 // extern int maxLevel;
 extern bool task1_2Finished;
 extern bool task1_3Finished;
@@ -139,6 +144,7 @@ void setDateTime();//更新时间
 void readJzFile();//将基站文件读入内存
 void readTermMoveFile();//将终端路线读入内存
 void readWZMoveFile();//将伪基站路径线性读入内存
+void analyzeStatistics();//分析基站分布数据
 
 //和四叉树结构有关的函数(需声明)
 int defineWhichQuadrant(Station* st,QuadTreeNode* tree);//查找这个基站相对于当前中心的象限
@@ -152,8 +158,7 @@ void task2Process();//任务2:主体调用
 void task3Process();//任务3:给定3个坐标，找到要求的基站
 void task4Process();//任务4:类似任务3
 void task5Process();//任务5过程
-// void ext1Process(int i);//扩展1过程
-void ext1Process_2(int i);//扩展1，备用
+void ext1Process(int i);//扩展1，备用
 void ext2Process(int i1,int i2);//扩展2过程
 void adv1Process(int i);//升级1过程
 void adv2Process(int i);//升级2过程
