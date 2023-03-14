@@ -35,14 +35,14 @@ struct QuadTreeNode//四叉树结构
     vector<int> includedStationIndex;//此区域(节点)内所有基站 ！索引！ ，没有则size为0
     pair<int,int> prefix;//分别表示x和y方向的象限记录
     int quarterWidth();//该区块1/4边长
-    // QuadTreeNode* northNode();//北侧区块
-    // QuadTreeNode* southNode();//南侧区块
-    // QuadTreeNode* eastNode();//东侧区块
-    // QuadTreeNode* westNode();//西侧区块
-    // QuadTreeNode* nwNode();//西北区块
-    // QuadTreeNode* neNode();//东北区块
-    // QuadTreeNode* swNode();//西南区块
-    // QuadTreeNode* seNode();//东南区块
+    QuadTreeNode* northNode();//北侧区块
+    QuadTreeNode* southNode();//南侧区块
+    QuadTreeNode* eastNode();//东侧区块
+    QuadTreeNode* westNode();//西侧区块
+    QuadTreeNode* nwNode();//西北区块
+    QuadTreeNode* neNode();//东北区块
+    QuadTreeNode* swNode();//西南区块
+    QuadTreeNode* seNode();//东南区块
 };
 struct Station//基站信息
 {
@@ -94,11 +94,18 @@ extern char* presentDateTime;
 extern tm* ltm;
 extern string fDate;
 extern string fTime;
+// extern int maxLevel;
+// extern bool task1_2Finished;
+// extern bool task1_3Finished;
+// extern QuadTreeNode* NW_estChunk;//最西北角区块地址
+// extern QuadTreeNode* SE_estChunk;//最东南角区块地址
+// extern QuadTreeNode* SE_nwChunk;//东南角区块的西北小区块地址
+extern QuadTreeNode* tempNode;
+extern QuadTreeNode* tempThis;
 extern int maxX;
 extern int maxY;
 extern int minX;
 extern int minY;
-// extern int maxLevel;
 extern int testx3[3];
 extern int testy3[3];//任务3数据
 extern int testx4[3];
@@ -151,7 +158,8 @@ void task2Process();//任务2:主体调用
 void task3Process();//任务3:给定3个坐标，找到要求的基站
 void task4Process();//任务4:类似任务3
 void task5Process();//任务5过程
-void ext1Process(int i);//扩展1，备用
+// void ext1Process(int i);//扩展1过程
+void ext1Process_2(int i);//扩展1，备用
 void ext2Process(int i1,int i2);//扩展2过程
 void adv1Process(int i);//升级1过程
 void adv2Process(int i);//升级2过程

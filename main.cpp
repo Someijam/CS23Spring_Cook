@@ -17,6 +17,13 @@ tm* ltm = localtime(&now);
 string fDate="";
 string fTime="";
 // int maxLevel=0;
+// bool task1_2Finished=false;
+// bool task1_3Finished=false;
+// QuadTreeNode* NW_estChunk;//最西北角区块地址
+// QuadTreeNode* SE_estChunk;//最东南角区块地址
+// QuadTreeNode* SE_nwChunk;//东南角区块的西北小区块地址
+QuadTreeNode* tempNode;
+QuadTreeNode* tempThis;
 int maxX;
 int maxY;
 int minX;
@@ -134,7 +141,7 @@ int main()
     /******************扩展1******************/
     setDateTime();//更新日志文件里的时间
     logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"即将执行Ext1，请前往\"outputs/ext1.out\"下查看输出结果。"<<endl;
-    ext1Process(1);
+    ext1Process_2(1);
     setDateTime();//更新日志文件里的时间
     logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"Ext1已完成。"<<endl;
     /*****************扩展1结束*****************/
