@@ -527,7 +527,7 @@ void analyzeStatistics()//分析数据
 //和四叉树结构有关的函数(需声明)
 int defineWhichQuadrant(Station* st,QuadTreeNode* tree)//查找这个基站相对于当前中心的象限
 {
-    if((st->x-tree->x>0)&&(st->y-tree->y>=0))return 0;
+    if((st->x-tree->x>=0)&&(st->y-tree->y>=0))return 0;
     else if((st->x-tree->x<=0)&&(st->y-tree->y>0))return 1;
     else if((st->x-tree->x<0)&&(st->y-tree->y<=0))return 2;
     else if((st->x-tree->x>=0)&&(st->y-tree->y<0))return 3;
@@ -653,7 +653,7 @@ QuadTreeNode* positionInWhichChunk(int x,int y)//当前坐标的点在哪一个�
     while (!currentChunk->isLeaf)
     {
         int quadrant=-1;
-        if((x-currentChunk->x>0)&&(y-currentChunk->y>=0))quadrant=0;
+        if((x-currentChunk->x>=0)&&(y-currentChunk->y>=0))quadrant=0;
         else if((x-currentChunk->x<=0)&&(y-currentChunk->y>0))quadrant=1;
         else if((x-currentChunk->x<0)&&(y-currentChunk->y<=0))quadrant=2;
         else if((x-currentChunk->x>=0)&&(y-currentChunk->y<0))quadrant=3;
