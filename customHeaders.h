@@ -164,3 +164,7 @@ void ext2Process(int i1,int i2);//扩展2过程
 void adv1Process(int i);//升级1过程
 void adv2Process(int i);//升级2过程
 void miscProcess();//杂项
+
+//APIs
+int bestMatchStation_new(double x,double y);//给定x,y返回最优基站在Stations中的索引
+void showVChunkStatons_new(int centerX,int centerY,int halfWidth,ofstream &fout);//给定中心坐标和范围，显示周围基站

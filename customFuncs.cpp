@@ -759,6 +759,31 @@ void stationsNearBy(vector<int> &nearbyStationsIndex,int posx,int posy)//工具�
     }
     return;
 }
+void stationsNearBy_new(vector<int> &nearbyStationsIndex,int posx,int posy)//新：工具函数，给定点坐标，收集附近的基站到容器中。
+{
+    //中心搜索附近1km内的基站
+    Square oneKmChunk(posx,posy,1000);
+    oneKmChunk.collectStationsInside(nearbyStationsIndex);
+    for(vector<int>::iterator it=nearbyStationsIndex.begin();it!=nearbyStationsIndex.end();)
+    {
+        bool beyondValidDis=((distanceFromSttoPoint(Stations[*it],posx,posy)>=300*sqrt(Stations[*it].baseStrength))&&(Stations[*it].type==0))||((distanceFromSttoPoint(Stations[*it],posx,posy)>=1000*sqrt(Stations[*it].baseStrength))&&(Stations[*it].type==1));
+        if(beyondValidDis)
+        {
+            it=nearbyStationsIndex.erase(it);
+        }//筛掉超出有效距离的基站
+        else
+        {
+            ++it;
+        }
+    }
+    //高速基站单独比较
+    for(int i=0;i<ExpressWayStationsNo.size();i++)
+    {
+        if(distanceFromSttoPoint(Stations[ExpressWayStationsNo[i]],posx,posy)<=5000*sqrt(Stations[ExpressWayStationsNo[i]].baseStrength))
+            nearbyStationsIndex.push_back(ExpressWayStationsNo[i]);//高速基站收录条件
+    }
+    return;
+}
 int bestMatchStation(double x,double y)//工具函数，给定x,y返回最优基站在Stations中的索引
 {
     vector<int> nearbyStationsIndex;
@@ -1483,5 +1508,32 @@ void adv2Process(int i)//升级2过程
 void miscProcess()//杂项
 {
     
+    return;
+}
+
+//APIs(需声明)
+int bestMatchStation_new(double x,double y)//给定x,y返回最优基站在Stations中的索引
+{
+    vector<int> nearbyStationsIndex;
+    stationsNearBy(nearbyStationsIndex,x,y);
+    int index=0;
+    if(nearbyStationsIndex.size()==0)return 0;//附近没有基站，返回0
+    int strongestStationIndex=nearbyStationsIndex[0];
+    for(int i=0;i<nearbyStationsIndex.size();i++)
+    {
+        if(currentPointSignalStrength(Stations[strongestStationIndex],x,y)<currentPointSignalStrength(Stations[nearbyStationsIndex[i]],x,y))strongestStationIndex=nearbyStationsIndex[i];
+    }
+    return strongestStationIndex;
+}
+void showVChunkStatons_new(int centerX,int centerY,int halfWidth,ofstream &fout)//给定中心坐标和范围，显示周围基站
+{
+    fout<<"搜索中心:("<<centerX<<","<<centerY<<") 搜索范围: ("<<centerX-halfWidth<<"<=x<="<<centerX+halfWidth<<")、("<<centerY-halfWidth<<"<=y<="<<centerY+halfWidth<<")"<<endl;
+    vector<int> taskContainer;
+    Square taskSquare(centerX,centerY,halfWidth);
+    taskSquare.collectStationsInside(taskContainer);
+    for(int i=0;i<taskContainer.size();i++)
+    {
+        fout<<"\t基站#"<<Stations[taskContainer[i]].no<<":"<<"\t"<<"坐标("<<Stations[taskContainer[i]].x<<","<<Stations[taskContainer[i]].y<<")"<<"\t"<<"类别:"<<Stations[taskContainer[i]].typeName<<"\t"<<"相对强度:"<<setiosflags(ios::fixed)<<setprecision(4)<<Stations[taskContainer[i]].baseStrength<<resetiosflags(ios::fixed)<<endl;
+    }
     return;
 }
