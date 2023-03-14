@@ -1512,6 +1512,55 @@ void miscProcess()//杂项
 }
 
 //APIs(需声明)
+void iniProcess()//无main时的初始化
+{
+    setDateTime();//更新日志文件里的时间
+
+    string cmdLogPath="./logs/"+fDate;
+    cmdLogPath=cmdLogPath+"_";
+    cmdLogPath=cmdLogPath+fTime;
+    cmdLogPath=cmdLogPath+".log";
+
+    task1out.open("./outputs/task1.out",ios::out);
+    task2out.open("./outputs/task2.out",ios::out);
+    task3out.open("./outputs/task3.out",ios::out);
+    task4out.open("./outputs/task4.out",ios::out);
+    task5out.open("./outputs/task5.out",ios::out);
+    ext1out.open("./outputs/ext1.out",ios::out);
+    ext2out.open("./outputs/ext2.out",ios::out);
+    adv1out.open("./outputs/adv1.out",ios::out);
+    adv2out.open("./outputs/adv2.out",ios::out);
+    //打开用于输出答案的文件
+    logout.open(cmdLogPath.c_str(),ios::out);//日志文件
+
+    MapRoot.x=0;
+    MapRoot.y=0;
+    MapRoot.level=0;
+    MapRoot.isLeaf=true;
+    MapRoot.parent=NULL;
+    MapRoot.prefix.first=0;
+    MapRoot.prefix.second=0;
+
+    readJzFile();
+    //线性存储各个基站数据到内存，免得频繁磁盘IO
+    analyzeStatistics();//分析基站分布数据
+    readTermMoveFile();
+    //线性读取终端移动路径到内存
+    readWZMoveFile();
+    logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"Successfully added terminal routes to the memory."<<endl;
+
+    int stCnt=0;
+    for(int i=1;i<Stations.size();i++)//基站信息添加到四叉树
+    {
+        addStationToTree(i);
+        setDateTime();//更新日志文件里的时间
+        // logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"Added St#"<<Stations[i].no<<" \tPosition("<<Stations[i].x<<","<<Stations[i].y<<") \t to the Quad Tree."<<endl;
+        stCnt=i;
+    }
+    logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"Totally added "<<stCnt<<" stations to the Quad Tree."<<endl;
+    //将基站存储到四叉树中
+    return;
+}
 int bestMatchStation_new(double x,double y)//给定x,y返回最优基站在Stations中的索引
 {
     vector<int> nearbyStationsIndex;
@@ -1535,5 +1584,23 @@ void showVChunkStatons_new(int centerX,int centerY,int halfWidth,ofstream &fout)
     {
         fout<<"\t基站#"<<Stations[taskContainer[i]].no<<":"<<"\t"<<"坐标("<<Stations[taskContainer[i]].x<<","<<Stations[taskContainer[i]].y<<")"<<"\t"<<"类别:"<<Stations[taskContainer[i]].typeName<<"\t"<<"相对强度:"<<setiosflags(ios::fixed)<<setprecision(4)<<Stations[taskContainer[i]].baseStrength<<resetiosflags(ios::fixed)<<endl;
     }
+    return;
+}
+void endProcess()//无main时的收尾工作
+{
+    deleteMap(&MapRoot);//释放四叉树占用的空间
+    setDateTime();//更新日志文件里的时间
+    logout<<"["<<fTime<<"]"<<"[Main/INFO]"<<"四叉树已经清除。"<<endl;
+    // logout<<"MaxLevel="<<maxLevel<<endl;
+    logout.close();
+    task1out.close();
+    task2out.close();
+    task3out.close();
+    task4out.close();
+    task5out.close();
+    ext1out.close();
+    ext2out.close();
+    adv1out.close();
+    adv2out.close();//关闭文件
     return;
 }

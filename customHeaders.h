@@ -166,5 +166,7 @@ void adv2Process(int i);//升级2过程
 void miscProcess();//杂项
 
 //APIs
+void iniProcess();//无main时的初始化
 int bestMatchStation_new(double x,double y);//给定x,y返回最优基站在Stations中的索引
 void showVChunkStatons_new(int centerX,int centerY,int halfWidth,ofstream &fout);//给定中心坐标和范围，显示周围基站
+void endProcess();//无main时的收尾工作
